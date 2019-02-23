@@ -1,9 +1,17 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class Controller {
+	ArrayList<Request> requests;
+	ArrayList<Zone> zones;
+	ArrayList<Car> cars;
 	
-	
+	public Controller() {
+		requests = new ArrayList<Request>();
+		cars = new ArrayList<Car>();
+		zones = new ArrayList<Zone>();
+	}
 	public static void main(String [] args) {
 		FileInputStream fr;
 		int line;
