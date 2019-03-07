@@ -10,6 +10,7 @@ public class Controller {
 	private static Request rq;
 	private static Zone zone;
 	private static Car car;
+	private static OverlapMatrix matrix;
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -60,9 +61,10 @@ public class Controller {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			createOverlapMatrix();
 	}
 	
-	static protected void processInputData(int ccounter,int counter,int input){
+	static private void processInputData(int ccounter,int counter,int input){
 		switch(ccounter) {
 			case 0:
 				//Process requests
@@ -121,8 +123,34 @@ public class Controller {
 				break;
 			default:
 				//Invalid ccounter
-				System.out.println("Unrecognized ccounter");
+				System.out.println("Invalid ccounter");
 				break;
 		}
 	} 
+	
+	static public void createOverlapMatrix(){
+		int n = requests.size();
+		matrix = new OverlapMatrix(n, n);
+		for (int col = 0; col < n; col++){
+			for (int row = 0; row < n; row++){
+				if(col != row && overlaps(matrix, col, row, n) == true){
+					matrix.set(row, col, true);
+				}
+				else{
+					matrix.set(row, col, false);
+				}
+			}
+		}
+	}
+	
+	static private boolean overlaps(OverlapMatrix matrix, int col, int row, int n){
+		int rbegin = requests.get(row).getStartday() * 1440 + requests.get(row).getStartminute();
+		int rend = rbegin + requests.get(row).getDuration();
+		int cbegin = requests.get(col).getStartday() * 1440 + requests.get(col).getStartminute();
+		int cend = cbegin + requests.get(col).getDuration();
+		if (cbegin >= rbegin || cbegin <= rend || cend >= rbegin || cend <= rend){
+			return true;
+		}
+		return false;
+	}
 }
