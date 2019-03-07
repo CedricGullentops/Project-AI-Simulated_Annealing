@@ -2,11 +2,9 @@ import java.util.ArrayList;
 
 public class Zone {
 	private int id;
-	private ArrayList<Integer> nextto;
+	private ArrayList<Integer> nextto =  new ArrayList<Integer>();
 	
-	public Zone(int x) {
-		id = x;
-		nextto = new ArrayList<Integer>();
+	public Zone(){
 	}
 	
 	public void addNeighbour(int x) {
