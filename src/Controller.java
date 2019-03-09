@@ -21,18 +21,18 @@ public class Controller {
 				fr = new FileInputStream("examples/100_5_14_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
-						System.out.println(ccounter + " . " + counter + ". " + input);
+						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = ""; 
 					}
 					else if((char)line == ';') {
-						System.out.println(ccounter + " . " + counter + ". " + input);
+						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = ""; 
 						counter++;
 					}
 					else if((char)line == '\n') {
-						System.out.println(ccounter + " . " + counter + ". " + input);
+						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = "";
 						counter = 0;
@@ -45,7 +45,7 @@ public class Controller {
 								input = "";
 							}
 						}
-						System.out.println(ccounter + " . " + counter + ". " + input);
+						//System.out.println(ccounter + " . " + counter + ". " + input);
 						input = "";
 					}
 					else {
@@ -61,7 +61,7 @@ public class Controller {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			createOverlapMatrix();
+			//createOverlapMatrix();
 	}
 	
 	static private void processInputData(int ccounter,int counter,int input){
@@ -141,6 +141,7 @@ public class Controller {
 				}
 			}
 		}
+		matrix.display();
 	}
 	
 	static private boolean overlaps(OverlapMatrix matrix, int col, int row, int n){
@@ -148,7 +149,7 @@ public class Controller {
 		int rend = rbegin + requests.get(row).getDuration();
 		int cbegin = requests.get(col).getStartday() * 1440 + requests.get(col).getStartminute();
 		int cend = cbegin + requests.get(col).getDuration();
-		if (cbegin >= rbegin || cbegin <= rend || cend >= rbegin || cend <= rend){
+		if ((cbegin >= rbegin && cbegin <= rend) || (cend >= rbegin && cend <= rend)){
 			return true;
 		}
 		return false;
