@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Solution {
@@ -5,7 +8,7 @@ public class Solution {
 	private ArrayList<int[]> Vehicle_Assignements;
 	private ArrayList<int[]> Assigned_Requests;
 	private ArrayList<int[]> Unassigned_Requests;
-	
+	private ArrayList<Request> req_temp;
 	/**
 	 * Constructor
 	 */
@@ -29,6 +32,7 @@ public class Solution {
 		int[] currentAssignedRequest, currentAssignedVehicle, assignement, unassignement;
 		assignement = new int[2];
 		unassignement = new int[1];
+		req_temp = requests;
 		// iterate over each element in requests
 		for (i = 0 ; i < requests.size() ; i++)
 		{
@@ -122,6 +126,60 @@ public class Solution {
 		}
 	}
 	
+	public void printCSV() {
+		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
+			
+			System.out.println("Writing output file...");
+			System.out.println(Vehicle_Assignements.size() + " vehicle assignments");
+			System.out.println(Assigned_Requests.size() + " request assignments");
+			System.out.println(Unassigned_Requests.size() + " request unassignments");
+			
+		    StringBuilder sb = new StringBuilder();
+		    sb.append(calcSum());
+		    sb.append("+Vehicle assignments\n");
+		    for(int i=0; i< Vehicle_Assignements.size();i++) {
+		    	sb.append("car");
+		    	sb.append(Vehicle_Assignements.get(i)[0]);
+		    	sb.append(";");
+		    	sb.append("z");
+		    	sb.append(Vehicle_Assignements.get(i)[1]);
+		    	sb.append("\n");
+		    }
+		    sb.append("+Assigned requests\n");
+		    for(int i=0; i< Assigned_Requests.size();i++) {
+		    	sb.append("req");
+		    	sb.append(Assigned_Requests.get(i)[0]);
+		    	sb.append(";");
+		    	sb.append("car");
+		    	sb.append(Assigned_Requests.get(i)[1]);
+		    	sb.append("\n");
+		    }
+		    sb.append("+Unassigned requests\n");
+		    for(int i=0; i< Unassigned_Requests.size();i++) {
+		    	sb.append("req");
+		    	sb.append(Unassigned_Requests.get(i)[0]);
+		    	sb.append("\n");
+		    }	
+
+		    writer.write(sb.toString());
+
+		    System.out.println("Output file written!");
+
+		    } catch (FileNotFoundException e) {
+		      System.out.println(e.getMessage());
+		    }
+	}
+	
+	private int calcSum() {
+		int sum;
+	    for(int i=0; i< req_temp.size();i++) {
+	    	int id = req_temp.get(i).getId();
+	    	
+	    	
+	    }
+		return sum;
+	}
+
 
 	/**
 	 * Getters and setters (Automatically generated)

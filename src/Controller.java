@@ -11,6 +11,7 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
+	private static Solution solution;
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -61,7 +62,12 @@ public class Controller {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//createOverlapMatrix();
+			createOverlapMatrix();
+			solution = new Solution();
+			solution.GenerateInitial(requests, matrix);
+			solution.printCSV();
+			
+			
 	}
 	
 	static private void processInputData(int ccounter,int counter,int input){
