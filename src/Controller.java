@@ -2,6 +2,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Controller {
 	private static ArrayList<Request> requests = new ArrayList<Request>();
@@ -11,9 +13,19 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
-	private static Solution solution;
+	private static Solution solution,solution_best;
+	private static Timer timer = new Timer();
+	private static int seconds = 0;
+	private static int nMinutes = 5;
+	private static int nNeighbours = 3;
 	
 	public static void main(String [] args) {
+		timer.scheduleAtFixedRate(new TimerTask() {
+			  @Override
+			  public void run() {
+			    seconds++;
+			  }
+			}, 1000, 1000);
 		FileInputStream fr;
 		int line, counter = 0,ccounter=-1;
 		String input = "";
@@ -65,11 +77,39 @@ public class Controller {
 			createOverlapMatrix();
 			solution = new Solution();
 			solution.generateInitial(requests, matrix, zones);
+			simAnnealing();
 			solution.printCSV();
 			
 			
 	}
 	
+	private static void simAnnealing() {
+		int delta,start = 100,n=0;
+		solution = new Solution();
+		solution.GenerateInitial(requests, matrix);
+		solution_best = solution;
+		boolean carbool;
+		while(seconds < nMinutes*60) {
+			if (Math.random() > 0.7) {
+				carbool = false;
+			}
+			else {
+				carbool = true;
+			}
+			//solution.mutate(carbool, nNeighbours);
+			n++;
+			delta = solution.getCost() - solution_best.getCost();
+			if(delta <= 0) {
+				solution_best = solution;
+			}
+			else {
+				if(Math.random() >= Math.exp(-delta/start*1.0)) {
+					solution_best = solution;
+				}
+			}
+		}
+	}
+
 	static private void processInputData(int ccounter,int counter,int input){
 		switch(ccounter) {
 			case 0:
