@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Solution {
 	private int cost;
-	private ArrayList<int[]> Vehicle_Assignements;
+	private ArrayList<int[]> Vehicle_assignments;
 	private ArrayList<int[]> Assigned_Requests;
 	private ArrayList<int[]> Unassigned_Requests;
 	private ArrayList<Request> req_temp;
@@ -13,7 +13,7 @@ public class Solution {
 	 * Constructor
 	 */
 	public Solution(){
-		Vehicle_Assignements = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
+		Vehicle_assignments = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
 		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car
 		Unassigned_Requests = new ArrayList<int[]>();	// 0 = id
 	}
@@ -26,37 +26,45 @@ public class Solution {
 	{
 		// variables used in function
 		int i, j, k, l;
-		int currentCar, carZone;
-		boolean possible, inZone, carPossible;
+		int carZone;
+		Integer currentCar;
+		boolean possible, carPossible;
 		Request currentRequest;
-		int[] currentAssignedRequest, currentAssignedVehicle, assignement, unassignement;
-		assignement = new int[2];
-		unassignement = new int[1];
+		int[] currentAssignedRequest, currentAssignedVehicle, assignment, unassignment;
+		assignment = new int[2];
+		unassignment = new int[1];
 		req_temp = requests;
+		// print for starting initial solution
+		System.out.println("Creating initial solution...");
 		// iterate over each element in requests
 		for (i = 0 ; i < requests.size() ; i++)
 		{
+		//for (i = 0 ; i < 10 ; i++)
+		//{
 			possible = false;
-			inZone = true;
 			currentRequest = requests.get(i);
+			System.out.println("Request number " + Integer.toString(currentRequest.getId()));
 			// iterate over each car in current request
 			for (k = 0 ; k < currentRequest.getCars().size() ; k ++)
 			{
-				if (possible = true)
+				// if previous car was an option got to next request
+				if (possible)
 				{
 					continue;
 				}
 				carPossible = true;
 				currentCar = currentRequest.getCars().get(k);
+				System.out.println("Car number " + currentCar);
 				// iterate over each assigned request
 				for (j = 0 ; j < this.getAssigned_Requests().size() ; j++)
 				{
 					currentAssignedRequest = this.getAssigned_Requests().get(j);
 					// check if request j uses this car
+					System.out.println("Assigned car " + currentAssignedRequest[1] + " current car " + currentCar);
 					if(currentAssignedRequest[1] == currentCar)
 					{
 						// check if current request and assigned request overlap in time
-						if (matrix.get(currentRequest.getId(), currentAssignedRequest[0]) == true)
+						if (matrix.get(currentRequest.getId(), currentAssignedRequest[0]))
 						{
 							carPossible = false;
 						}
@@ -67,9 +75,9 @@ public class Solution {
 				{
 					carZone = -1;
 					// iterate over assigned vehicles
-					for (l = 0 ; l < this.getVehicle_Assignements().size() ; l++)
+					for (l = 0 ; l < this.getVehicle_assignments().size() ; l++)
 					{
-						currentAssignedVehicle = this.getVehicle_Assignements().get(l);
+						currentAssignedVehicle = this.getVehicle_assignments().get(l);
 						// check if this is the vehicle in question
 						if(currentCar == currentAssignedVehicle[0])
 						{
@@ -80,14 +88,19 @@ public class Solution {
 					// if car has no zone yet assign the requests zone and assign car to request
 					if(carZone == -1)
 					{
+						System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 						// assign zone to car
-						assignement[0] = currentCar;
-						assignement[1] = currentRequest.getZone();
-						this.getVehicle_Assignements().add(assignement);
+						assignment = new int[2];
+						assignment[0] = currentCar;
+						assignment[1] = currentRequest.getZone();
+						System.out.println("Assigning car " + assignment[0] + " to zone " + assignment[1]);
+						this.getVehicle_assignments().add(assignment);
 						// assign car to request
-						assignement[0] = currentRequest.getId();
-						assignement[1] = currentCar;
-						this.getAssigned_Requests().add(assignement);
+						assignment = new int[2];
+						assignment[0] = currentRequest.getId();
+						assignment[1] = currentCar;
+						System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
+						this.getAssigned_Requests().add(assignment);
 						// set possible to true and continue to next request
 						possible = true;
 						continue;
@@ -102,14 +115,17 @@ public class Solution {
 						// if cars zone is possible assign car to request and continue to next request
 						else
 						{
+							System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 							// if cars zone is next to requests zone
 							if (currentRequest.getZone() != carZone)
 							{
 								this.setCost(this.getCost() + currentRequest.getP2());
 							}
-							assignement[0] = currentRequest.getId();
-							assignement[1] = currentCar;
-							this.getAssigned_Requests().add(assignement);
+							assignment = new int[2];
+							assignment[0] = currentRequest.getId();
+							assignment[1] = currentCar;
+							System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
+							this.getAssigned_Requests().add(assignment);
 							// set possible to true and continue to next request
 							possible = true;
 							continue;
@@ -120,9 +136,11 @@ public class Solution {
 			// if request is not possible add to unassigned and add cost
 			if(!possible)
 			{
-				unassignement[0] = currentRequest.getId();
+				unassignment = new int[1];
+				unassignment[0] = currentRequest.getId();
 				cost += currentRequest.getP1();
-				this.getUnassigned_Requests().add(unassignement);
+				System.out.println("Add request " + unassignment[0] + " to unassigned requests");
+				this.getUnassigned_Requests().add(unassignment);
 			}
 		}
 	}
@@ -132,7 +150,7 @@ public class Solution {
 			
 			System.out.println("Writing output file...");
 			System.out.println(cost + " cost");
-			System.out.println(Vehicle_Assignements.size() + " vehicle assignments");
+			System.out.println(Vehicle_assignments.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
 			
@@ -140,12 +158,12 @@ public class Solution {
 		    sb.append(cost);
 		    sb.append("\n");
 		    sb.append("+Vehicle assignments\n");
-		    for(int i=0; i< Vehicle_Assignements.size();i++) {
+		    for(int i=0; i< Vehicle_assignments.size();i++) {
 		    	sb.append("car");
-		    	sb.append(Vehicle_Assignements.get(i)[0]);
+		    	sb.append(Vehicle_assignments.get(i)[0]);
 		    	sb.append(";");
 		    	sb.append("z");
-		    	sb.append(Vehicle_Assignements.get(i)[1]);
+		    	sb.append(Vehicle_assignments.get(i)[1]);
 		    	sb.append("\n");
 		    }
 		    sb.append("+Assigned requests\n");
@@ -199,12 +217,12 @@ public class Solution {
 		this.cost = cost;
 	}
 
-	public ArrayList<int[]> getVehicle_Assignements() {
-		return Vehicle_Assignements;
+	public ArrayList<int[]> getVehicle_assignments() {
+		return Vehicle_assignments;
 	}
 
-	public void setVehicle_Assignements(ArrayList<int[]> vehicle_Assignements) {
-		Vehicle_Assignements = vehicle_Assignements;
+	public void setVehicle_assignments(ArrayList<int[]> vehicle_assignments) {
+		Vehicle_assignments = vehicle_assignments;
 	}
 
 	public ArrayList<int[]> getAssigned_Requests() {
