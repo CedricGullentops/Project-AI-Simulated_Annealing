@@ -121,6 +121,7 @@ public class Solution {
 			if(!possible)
 			{
 				unassignement[0] = currentRequest.getId();
+				cost += currentRequest.getP1();
 				this.getUnassigned_Requests().add(unassignement);
 			}
 		}
@@ -130,12 +131,14 @@ public class Solution {
 		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
 			
 			System.out.println("Writing output file...");
+			System.out.println(cost + " cost");
 			System.out.println(Vehicle_Assignements.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
 			
 		    StringBuilder sb = new StringBuilder();
-		    sb.append(calcSum());
+		    sb.append(cost);
+		    sb.append("\n");
 		    sb.append("+Vehicle assignments\n");
 		    for(int i=0; i< Vehicle_Assignements.size();i++) {
 		    	sb.append("car");
@@ -171,10 +174,14 @@ public class Solution {
 	}
 	
 	private int calcSum() {
-		int sum;
+		int sum = 0;
 	    for(int i=0; i< req_temp.size();i++) {
 	    	int id = req_temp.get(i).getId();
-	    	
+	    	for(int j=0; i< Unassigned_Requests.size();i++) {
+	    		if(id == Unassigned_Requests.get(j)[0]) {
+	    			sum += req_temp.get(i).getP1();
+	    		}
+	    	}
 	    	
 	    }
 		return sum;
