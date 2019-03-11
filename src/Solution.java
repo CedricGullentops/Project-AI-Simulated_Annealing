@@ -171,11 +171,12 @@ public class Solution {
 		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
 			
 			System.out.println("Writing output file...");
+			/*
 			System.out.println(cost + " cost");
 			System.out.println(Vehicle_assignments.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
-			
+			*/
 		    StringBuilder sb = new StringBuilder();
 		    sb.append(cost);
 		    sb.append("\n");

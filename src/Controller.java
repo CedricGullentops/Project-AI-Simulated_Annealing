@@ -15,7 +15,7 @@ public class Controller {
 	private static OverlapMatrix matrix;
 	private static Solution solution,solution_best;
 	private static Timer timer = new Timer();
-	private static int seconds = 0;
+	private static double mseconds = 0;
 	private static int nMinutes = 5;
 	private static int nNeighbours = 3;
 	
@@ -23,9 +23,9 @@ public class Controller {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			  @Override
 			  public void run() {
-			    seconds++;
+			    mseconds++;
 			  }
-			}, 1000, 1000);
+			}, 1, 1);
 		FileInputStream fr;
 		int line, counter = 0,ccounter=-1;
 		String input = "";
@@ -75,10 +75,15 @@ public class Controller {
 				e.printStackTrace();
 			}
 			createOverlapMatrix();
+			System.out.println("Overlap matrix generated @ " + mseconds + " ms");
 			solution = new Solution();
 			solution.generateInitial(requests, matrix, zones);
+			System.out.println("Initial solution generated @ "+ mseconds + " ms");
 			// simAnnealing();
+			System.out.println("Stopped algorithm after @ "+ mseconds + " ms");
 			solution.printCSV();
+			System.out.println("Program exitted after @ "+ mseconds + " ms");
+			System.exit(0);
 			
 			
 	}
@@ -89,7 +94,7 @@ public class Controller {
 		solution.generateInitial(requests, matrix, zones);
 		solution_best = solution;
 		boolean carbool;
-		while(seconds < nMinutes*60) {
+		while(mseconds < nMinutes*60000) {
 			if (Math.random() > 0.7) {
 				carbool = false;
 			}
@@ -192,7 +197,7 @@ public class Controller {
 		//matrix.display();
 		try {
 			matrix.printOut();
-			System.out.println("Overlapmatrix created in bitmatrix.csv");
+			//System.out.println("Overlapmatrix created in bitmatrix.csv");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
