@@ -189,15 +189,22 @@ public class Controller {
 				}
 			}
 		}
-		matrix.display();
+		//matrix.display();
+		try {
+			matrix.printOut();
+			System.out.println("Overlapmatrix created in bitmatrix.csv");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	static private boolean overlaps(OverlapMatrix matrix, int col, int row, int n){
-		int rbegin = requests.get(row).getStartday() * 1440 + requests.get(row).getStartminute();
-		int rend = rbegin + requests.get(row).getDuration();
-		int cbegin = requests.get(col).getStartday() * 1440 + requests.get(col).getStartminute();
+		int rbegin = requests.get(row).getStartday() * 1440 + requests.get(row).getStartminute();		
+		int rend = rbegin + requests.get(row).getDuration();		
+		int cbegin = requests.get(col).getStartday() * 1440 + requests.get(col).getStartminute();		
 		int cend = cbegin + requests.get(col).getDuration();
-		if ((cbegin >= rbegin && cbegin <= rend) || (cend >= rbegin && cend <= rend)){
+		if ((cbegin >= rbegin && cbegin <= rend) || (cend >= rbegin && cend <= rend) || (cbegin <= rbegin && cend >= rend)){
 			return true;
 		}
 		return false;

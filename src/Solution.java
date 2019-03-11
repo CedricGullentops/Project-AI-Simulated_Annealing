@@ -25,8 +25,6 @@ public class Solution {
 	 */
 	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones)
 	{
-		System.out.println(matrix.get(94, 47));
-		System.out.println(matrix.get(47, 94));
 		// variables used in function
 		int i, j, k, l;
 		int carZone;
@@ -47,7 +45,7 @@ public class Solution {
 		//{
 			possible = false;
 			currentRequest = requests.get(i);
-			System.out.println("Request number " + Integer.toString(currentRequest.getId()));
+			//System.out.println("Request number " + Integer.toString(currentRequest.getId()));
 			// iterate over each car in current request
 			for (k = 0 ; k < currentRequest.getCars().size() ; k ++)
 			{
@@ -58,7 +56,7 @@ public class Solution {
 				}
 				carPossible = true;
 				currentCar = currentRequest.getCars().get(k);
-				System.out.println("Car number " + currentCar);
+				//System.out.println("Car number " + currentCar);
 				// iterate over each assigned request
 				for (j = 0 ; j < this.getAssigned_Requests().size() ; j++)
 				{
@@ -67,10 +65,10 @@ public class Solution {
 					if(currentAssignedRequest[1] == currentCar)
 					{
 						// check if current request and assigned request overlap in time
-						System.out.println("Current request " + currentRequest.getId() + " assigned request " + currentAssignedRequest[0]);
+						//System.out.println("Current request " + currentRequest.getId() + " assigned request " + currentAssignedRequest[0]);
 						if (matrix.get(currentRequest.getId(), currentAssignedRequest[0]))
 						{
-							System.out.println("car not possible");
+							//System.out.println("car not possible");
 							carPossible = false;
 							break;
 						}
@@ -94,19 +92,19 @@ public class Solution {
 					// if car has no zone yet assign the requests zone and assign car to request
 					if(carZone == -1)
 					{
-						System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
+						//System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 						// assign zone to car
 						assignment = new int[3];
 						assignment[0] = currentCar;
 						assignment[1] = currentRequest.getZone();
 						assignment[2] = 0;
-						System.out.println("Assigning car " + assignment[0] + " to zone " + assignment[1]);
+						//System.out.println("Assigning car " + assignment[0] + " to zone " + assignment[1]);
 						this.getVehicle_assignments().add(assignment);
 						// assign car to request
 						assignment = new int[2];
 						assignment[0] = currentRequest.getId();
 						assignment[1] = currentCar;
-						System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
+						//System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
 						this.getAssigned_Requests().add(assignment);
 						// set possible to true and continue to next request
 						possible = true;
@@ -123,7 +121,7 @@ public class Solution {
 						// if cars zone is possible assign car to request and continue to next request
 						else
 						{
-							System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
+							//System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 							assignment = new int[3];
 							assignment[0] = currentRequest.getId();
 							assignment[1] = currentCar;
@@ -134,7 +132,7 @@ public class Solution {
 								this.setCost(this.getCost() + currentRequest.getP2());
 								assignment[2] = 1;
 							}
-							System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0] + " is in zone " + assignment[2]);
+							//System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0] + " is in zone " + assignment[2]);
 							this.getAssigned_Requests().add(assignment);
 							// set possible to true and continue to next request
 							possible = true;
@@ -149,7 +147,7 @@ public class Solution {
 				unassignment = new int[1];
 				unassignment[0] = currentRequest.getId();
 				cost += currentRequest.getP1();
-				System.out.println("Add request " + unassignment[0] + " to unassigned requests");
+				//System.out.println("Add request " + unassignment[0] + " to unassigned requests");
 				this.getUnassigned_Requests().add(unassignment);
 			}
 		}
@@ -207,6 +205,7 @@ public class Solution {
 		    }	
 
 		    writer.write(sb.toString());
+		    writer.close();
 
 		    System.out.println("Output file written!");
 

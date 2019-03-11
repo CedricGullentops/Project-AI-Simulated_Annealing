@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.BitSet;
 
 public class OverlapMatrix {
@@ -32,4 +35,27 @@ public class OverlapMatrix {
 	    	 System.out.println(bs);
 	     System.out.println();
 	}    
+	 
+	public void printOut() throws FileNotFoundException {
+		PrintWriter writer = new PrintWriter(new File("bitmatrix.csv"));
+		StringBuilder sb = new StringBuilder();		
+		for(int j=-1;j<bitArr.length;j++) {
+			sb.append(j+",");
+		}		 
+		sb.append("\n");
+		for(int i =0;i<bitArr.length;i++) {
+			sb.append(i+ ",");
+			for(int j=0;j<bitArr.length;j++) {
+				if(bitArr[j].get(i)) {
+					sb.append("1,");
+				}
+				else {
+					sb.append("0,");
+				}
+			}			
+			sb.append("\n");
+		}
+		writer.write(sb.toString());
+		writer.close();
+	}
 }
