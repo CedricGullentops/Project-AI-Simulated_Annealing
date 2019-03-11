@@ -9,12 +9,13 @@ public class Solution {
 	private ArrayList<int[]> Assigned_Requests;
 	private ArrayList<int[]> Unassigned_Requests;
 	private ArrayList<Request> req_temp;
+	private ArrayList<Zone> zones;
 	/**
 	 * Constructor
 	 */
 	public Solution(){
 		Vehicle_assignments = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
-		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car
+		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
 		Unassigned_Requests = new ArrayList<int[]>();	// 0 = id
 	}
 	
@@ -22,7 +23,7 @@ public class Solution {
 	/**
 	 * Generate an initial solution
 	 */
-	public void GenerateInitial(ArrayList<Request> requests, OverlapMatrix matrix)
+	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones)
 	{
 		// variables used in function
 		int i, j, k, l;
@@ -34,6 +35,7 @@ public class Solution {
 		assignment = new int[2];
 		unassignment = new int[1];
 		req_temp = requests;
+		this.zones = zones; // we assume zones are ordened !!!!!!!!!!!!!!!
 		// print for starting initial solution
 		System.out.println("Creating initial solution...");
 		// iterate over each element in requests
@@ -60,7 +62,6 @@ public class Solution {
 				{
 					currentAssignedRequest = this.getAssigned_Requests().get(j);
 					// check if request j uses this car
-					System.out.println("Assigned car " + currentAssignedRequest[1] + " current car " + currentCar);
 					if(currentAssignedRequest[1] == currentCar)
 					{
 						// check if current request and assigned request overlap in time
@@ -90,9 +91,10 @@ public class Solution {
 					{
 						System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 						// assign zone to car
-						assignment = new int[2];
+						assignment = new int[3];
 						assignment[0] = currentCar;
 						assignment[1] = currentRequest.getZone();
+						assignment[2] = 0;
 						System.out.println("Assigning car " + assignment[0] + " to zone " + assignment[1]);
 						this.getVehicle_assignments().add(assignment);
 						// assign car to request
@@ -107,8 +109,9 @@ public class Solution {
 					}
 					else
 					{
-						// if cars zone is impossible add to cost and continue to next car
-						if (Math.abs(currentRequest.getZone() - carZone) > 1)
+						// if cars zone is impossible continue to next car
+						// if (Math.abs(currentRequest.getZone() - carZone) > 1)
+						if (!zones.get(currentRequest.getZone()).isNeighbour(carZone))
 						{
 							continue;
 						}
@@ -116,15 +119,17 @@ public class Solution {
 						else
 						{
 							System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
+							assignment = new int[3];
+							assignment[0] = currentRequest.getId();
+							assignment[1] = currentCar;
+							assignment[2] = 0;
 							// if cars zone is next to requests zone
 							if (currentRequest.getZone() != carZone)
 							{
 								this.setCost(this.getCost() + currentRequest.getP2());
+								assignment[2] = 1;
 							}
-							assignment = new int[2];
-							assignment[0] = currentRequest.getId();
-							assignment[1] = currentCar;
-							System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
+							System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0] + " is in zone " + assignment[2]);
 							this.getAssigned_Requests().add(assignment);
 							// set possible to true and continue to next request
 							possible = true;
@@ -144,6 +149,20 @@ public class Solution {
 			}
 		}
 	}
+	
+	
+	/**
+	 * Mutation of solution
+	 * input car: true if mutating car, false if mutating request
+	 * input step_amount: amount of mutations
+	 * if mutating car: unassign all requests to this car and assign now possible unassigned requests.
+	 * if mutating request: 
+	 */
+	public void mutate(boolean car, int step_amount)
+	{
+		
+	}
+	
 	
 	public void printCSV() {
 		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
@@ -189,20 +208,6 @@ public class Solution {
 		    } catch (FileNotFoundException e) {
 		      System.out.println(e.getMessage());
 		    }
-	}
-	
-	private int calcSum() {
-		int sum = 0;
-	    for(int i=0; i< req_temp.size();i++) {
-	    	int id = req_temp.get(i).getId();
-	    	for(int j=0; i< Unassigned_Requests.size();i++) {
-	    		if(id == Unassigned_Requests.get(j)[0]) {
-	    			sum += req_temp.get(i).getP1();
-	    		}
-	    	}
-	    	
-	    }
-		return sum;
 	}
 
 

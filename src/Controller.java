@@ -64,7 +64,7 @@ public class Controller {
 			}
 			createOverlapMatrix();
 			solution = new Solution();
-			solution.GenerateInitial(requests, matrix);
+			solution.generateInitial(requests, matrix, zones);
 			solution.printCSV();
 			
 			
