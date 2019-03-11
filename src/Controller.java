@@ -2,7 +2,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Controller {
 	private static ArrayList<Request> requests = new ArrayList<Request>();
@@ -13,8 +14,18 @@ public class Controller {
 	private static Car car;
 	private static OverlapMatrix matrix;
 	private static Solution solution,solution_best;
+	private static Timer timer = new Timer();
+	private static int seconds = 0;
+	private static int nMinutes = 5;
+	private static int nNeighbours = 3;
 	
 	public static void main(String [] args) {
+		timer.scheduleAtFixedRate(new TimerTask() {
+			  @Override
+			  public void run() {
+			    seconds++;
+			  }
+			}, 1000, 1000);
 		FileInputStream fr;
 		int line, counter = 0,ccounter=-1;
 		String input = "";
@@ -75,8 +86,15 @@ public class Controller {
 		solution = new Solution();
 		solution.GenerateInitial(requests, matrix);
 		solution_best = solution;
-		while(n < 1000) {
-			//solution.mutate(true);
+		boolean carbool;
+		while(seconds < nMinutes*60) {
+			if (Math.random() > 0.7) {
+				carbool = false;
+			}
+			else {
+				carbool = true;
+			}
+			//solution.mutate(carbool, nNeighbours);
 			n++;
 			delta = solution.getCost() - solution_best.getCost();
 			if(delta <= 0) {
@@ -88,9 +106,6 @@ public class Controller {
 				}
 			}
 		}
-		
-		
-		
 	}
 
 	static private void processInputData(int ccounter,int counter,int input){
