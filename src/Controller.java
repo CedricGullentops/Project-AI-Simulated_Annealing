@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Controller {
 	private static ArrayList<Request> requests = new ArrayList<Request>();
@@ -11,7 +12,7 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
-	private static Solution solution;
+	private static Solution solution,solution_best;
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -63,13 +64,35 @@ public class Controller {
 				e.printStackTrace();
 			}
 			createOverlapMatrix();
-			solution = new Solution();
-			solution.GenerateInitial(requests, matrix);
+			simAnnealing();
 			solution.printCSV();
 			
 			
 	}
 	
+	private static void simAnnealing() {
+		int delta,start = 100,n=0;
+		solution = new Solution();
+		solution.GenerateInitial(requests, matrix);
+		solution_best = solution;
+		while(n < 1000) {
+			//solution.mutate(true);
+			n++;
+			delta = solution.getCost() - solution_best.getCost();
+			if(delta <= 0) {
+				solution_best = solution;
+			}
+			else {
+				if(Math.random() >= Math.exp(-delta/start*1.0)) {
+					solution_best = solution;
+				}
+			}
+		}
+		
+		
+		
+	}
+
 	static private void processInputData(int ccounter,int counter,int input){
 		switch(ccounter) {
 			case 0:
