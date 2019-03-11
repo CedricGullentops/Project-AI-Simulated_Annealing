@@ -25,6 +25,8 @@ public class Solution {
 	 */
 	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones)
 	{
+		System.out.println(matrix.get(94, 47));
+		System.out.println(matrix.get(47, 94));
 		// variables used in function
 		int i, j, k, l;
 		int carZone;
@@ -65,9 +67,12 @@ public class Solution {
 					if(currentAssignedRequest[1] == currentCar)
 					{
 						// check if current request and assigned request overlap in time
+						System.out.println("Current request " + currentRequest.getId() + " assigned request " + currentAssignedRequest[0]);
 						if (matrix.get(currentRequest.getId(), currentAssignedRequest[0]))
 						{
+							System.out.println("car not possible");
 							carPossible = false;
+							break;
 						}
 					}
 				}

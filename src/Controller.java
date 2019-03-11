@@ -77,7 +77,7 @@ public class Controller {
 			createOverlapMatrix();
 			solution = new Solution();
 			solution.generateInitial(requests, matrix, zones);
-			simAnnealing();
+			// simAnnealing();
 			solution.printCSV();
 			
 			
@@ -86,7 +86,7 @@ public class Controller {
 	private static void simAnnealing() {
 		int delta,start = 100,n=0;
 		solution = new Solution();
-		solution.GenerateInitial(requests, matrix);
+		solution.generateInitial(requests, matrix, zones);
 		solution_best = solution;
 		boolean carbool;
 		while(seconds < nMinutes*60) {
@@ -181,9 +181,11 @@ public class Controller {
 			for (int row = 0; row < n; row++){
 				if(col != row && overlaps(matrix, col, row, n) == true){
 					matrix.set(row, col, true);
+					matrix.set(col, row, true);
 				}
 				else{
 					matrix.set(row, col, false);
+					matrix.set(col, row, false);
 				}
 			}
 		}
