@@ -168,11 +168,11 @@ public class Solution {
 	{
 		int nzones = zones.size();
 		int ncars = cars.size();
+		Random rand = new Random();
 		//Mutate a number of cars
 		if (car){
 			//Create a list of unique random cars to unassign
 			ArrayList<Integer> freecars = new ArrayList<Integer>();
-			Random rand = new Random();
 			for (int i=0; i<step_amount; i++){	
 				int  randomcar;
 				do {
@@ -224,9 +224,57 @@ public class Solution {
 	        	}
 	        }
 		}
+		
+		
 		//Mutate a number of requests
 		else{
-			
+			ArrayList<Integer> New_Unassigned = new ArrayList<Integer>();
+			ArrayList<Integer> freecars = new ArrayList<Integer>();
+			for (int i=0; i<step_amount; i++){	
+				int randomrequest;
+				do {
+					randomrequest = rand.nextInt(Assigned_Requests.size());
+		       } while (New_Unassigned.contains(randomrequest));
+				New_Unassigned.add(randomrequest);
+				//Add the new unassigned requests to unassigned, remove from assigned and put the freed car in a list
+		        for (int j=0; j<Assigned_Requests.size(); j++){
+		        	if (Assigned_Requests.get(j)[0] == randomrequest){
+		        		Unassigned_Requests.add(new int[randomrequest]);
+		        		freecars.add(Assigned_Requests.get(j)[1]);
+		        		Assigned_Requests.remove(j);
+		        	}
+		        }
+			}
+			//Run through the Unassigned list and try to assign an available car to each unassigned request.
+	        for (int l=0; l<Unassigned_Requests.size(); l++){
+	        	for (int m=0; m<freecars.size(); m++){
+	        		//If a free car is listed in the requests possible car list check if it is in a neighbouring zone and assign it.
+	        		if (requests.get(Unassigned_Requests.get(l)[0]).getCars().contains(freecars.get(m))){
+	        			int zoneid = -1;
+	        			//Todo: Als lijst altijd gesorteed is is het niet nodig om deze te doorlopen
+	        			for (int i=0; i<Vehicle_assignments.size(); i++){
+	        				if (Vehicle_assignments.get(i)[0] == freecars.get(m)){
+	        					zoneid = Vehicle_assignments.get(i)[1];
+	        				}
+	        			}
+	        			if (zoneid == -1){
+	        				continue;
+	        			}
+	        			int neighbour;
+	        			if (zones.get(requests.get(Unassigned_Requests.get(l)[0]).getZone()).getId() == zoneid){
+	        				neighbour = 0;
+	        				int[] new_assigned = {Unassigned_Requests.get(l)[0], freecars.get(m), neighbour};
+	        				Assigned_Requests.add(new_assigned);
+	        			}
+	        			else if (zones.get(requests.get(Unassigned_Requests.get(l)[0]).getZone()).isNeighbour(zoneid)){
+	        				neighbour = 1;
+	        				int[] new_assigned = {Unassigned_Requests.get(l)[0], freecars.get(m), neighbour};
+	        				Assigned_Requests.add(new_assigned);
+	        				Unassigned_Requests.remove(l);
+	        			}
+	        		}
+	        	}
+	        }
 		}
 	}
 	
