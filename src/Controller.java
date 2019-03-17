@@ -94,14 +94,15 @@ public class Controller {
 		solution.generateInitial(requests, matrix, zones);
 		solution_best = solution;
 		boolean carbool;
-		while(mseconds < nMinutes*60000) {
+		while(mseconds < nMinutes*100) {
 			if (Math.random() > 0.7) {
 				carbool = false;
 			}
 			else {
 				carbool = true;
 			}
-			//solution.mutate(carbool, nNeighbours);
+			carbool = true;
+			solution.mutate(cars, zones, requests, carbool, nNeighbours);
 			n++;
 			delta = solution.getCost() - solution_best.getCost();
 			if(delta <= 0) {
