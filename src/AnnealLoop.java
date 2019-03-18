@@ -8,6 +8,9 @@ public class AnnealLoop extends Thread{
 	private static ArrayList<Car> cars = new ArrayList<Car>();
 	private static OverlapMatrix matrix;
 	boolean carbool;
+	private static double mseconds = 0;
+	private static int nMinutes = 5;
+	private static int nNeighbours = 3;
 	
 	public AnnealLoop(ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m) {
 		matrix = m;
@@ -20,35 +23,32 @@ public class AnnealLoop extends Thread{
 	}
 	
 	public void run() {
+		int delta,n;
+		int start = 100;
 		while(true) {
-			try {
-				Thread.sleep((int)(Math.random()*3000*soort));
-			} catch (InterruptedException e) {
-			}
-			synchronized(P) {
-			if(soort != 1) {
-				while(P.getVrij() < 3) {
-					P.wachtOp(false);
-					try {P.wait();} 
-					catch (InterruptedException e) {
+			while(mseconds < nMinutes*100) {
+				if (Math.random() > 0.7) {
+					carbool = false;
+				}
+				else {
+					carbool = true;
+				}
+				carbool = true;
+				solution.mutate(cars, zones, requests, carbool, nNeighbours);
+				delta = solution.getCost() - solution_best.getCost();
+				if(delta <= 0) {
+					solution_best = solution;
+				}
+				else {
+					if(Math.random() >= Math.exp(-delta/start*1.0)) {
+						solution_best = solution;
 					}
 				}
-				P.goIn(new Bus());
 			}
-			else{
-				while(P.getVrij() < 1) {
-					P.wachtOp(true);
-					try {P.wait();} 
-					catch (InterruptedException e) {
-					}
-				}
-				P.goIn(new Auto());
-			}
-			kader.setLab(P.getVrij());
-		}}
+		}
 	}
 	
-	public void startIn() {
+	public void startLoop() {
 		this.start();
 	}
 }

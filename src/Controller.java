@@ -18,6 +18,7 @@ public class Controller {
 	private static double mseconds = 0;
 	private static int nMinutes = 5;
 	private static int nNeighbours = 3;
+	static int tcount = 1;
 	
 	public static void main(String [] args) {
 		timer.scheduleAtFixedRate(new TimerTask() {
@@ -88,7 +89,7 @@ public class Controller {
 			
 	}
 	
-	private static void simAnnealing(int tcount) {
+	private static void simAnnealing() {
 		int delta,start = 100,n=0;
 
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
@@ -97,26 +98,7 @@ public class Controller {
 			threads.get(i).startLoop();
 		}
 
-		while(mseconds < nMinutes*100) {
-			if (Math.random() > 0.7) {
-				carbool = false;
-			}
-			else {
-				carbool = true;
-			}
-			carbool = true;
-			solution.mutate(cars, zones, requests, carbool, nNeighbours);
-			n++;
-			delta = solution.getCost() - solution_best.getCost();
-			if(delta <= 0) {
-				solution_best = solution;
-			}
-			else {
-				if(Math.random() >= Math.exp(-delta/start*1.0)) {
-					solution_best = solution;
-				}
-			}
-		}
+		
 	}
 
 	static private void processInputData(int ccounter,int counter,int input){
