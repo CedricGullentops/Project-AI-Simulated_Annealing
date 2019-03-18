@@ -15,14 +15,13 @@ public class Controller {
 	private static OverlapMatrix matrix;
 	private static Solution solution,solution_best;
 	private static Timer timer = new Timer();
-	private static Double mseconds;
-	private static int nMinutes = 5;
+	private static double mseconds=0;
+	private static int runtime = 1;
 	private static int nNeighbours = 3;
-	static int tcount = 1;
+	static int tcount = 2;
 	
 	
 	public static void main(String [] args) {
-		mseconds =  new Double(0);
 		timer.scheduleAtFixedRate(new TimerTask() {
 			  @Override
 			  public void run() {
@@ -83,9 +82,9 @@ public class Controller {
 			solution.generateInitial(requests, matrix, zones, cars);
 			System.out.println("Initial solution generated @ "+ mseconds + " ms");
 			simAnnealing();
-			System.out.println("Stopped algorithm after @ "+ mseconds + " ms");
+			System.out.println("Stopped algorithm @ "+ mseconds + " ms");
 			solution.printCSV();
-			System.out.println("Program exitted after @ "+ mseconds + " ms");
+			System.out.println("Program exitted @ "+ mseconds + " ms");
 			System.exit(0);
 			
 			
@@ -93,9 +92,24 @@ public class Controller {
 	
 	private static void simAnnealing() {
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
+		Solution temp_sol;
 		for(int i=0;i < tcount;i++) {
-			threads.add(new AnnealLoop(requests,zones,cars,matrix,mseconds));
+			threads.add(new AnnealLoop(i,requests,zones,cars,matrix));
 			threads.get(i).startLoop();
+		}
+		while(true) {
+			System.out.println(mseconds);
+			
+			if(mseconds >= runtime*600) {
+				for(int i=0;i < tcount;i++) {
+					temp_sol = threads.get(i).stopLoop();
+					if(temp_sol.getCost() <= solution.getCost()) {
+						solution = temp_sol;
+					}
+				}
+				break;
+			}
+			
 		}
 
 		

@@ -174,6 +174,8 @@ public class Solution {
 	 */
 	public void mutate(ArrayList<Car> cars, ArrayList<Zone> zones, ArrayList<Request> requests, boolean car, int step_amount)
 	{
+		if(true)
+			return;
 		System.out.println("New mutation");
 		int nzones = zones.size();
 		int ncars = cars.size();

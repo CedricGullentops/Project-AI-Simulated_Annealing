@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AnnealLoop extends Thread{
 	
@@ -7,17 +9,18 @@ public class AnnealLoop extends Thread{
 	private static ArrayList<Zone> zones = new ArrayList<Zone>();
 	private static ArrayList<Car> cars = new ArrayList<Car>();
 	private static OverlapMatrix matrix;
-	boolean carbool;
-	private static Double mseconds;
-	private static int nMinutes = 5;
+	private boolean carbool;
 	private static int nNeighbours = 3;
+	private boolean run=false,running=false;
+	private int tid;
 	
-	public AnnealLoop(ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m,Double ms) {
+	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m) {
+		
+		tid = id+1;
 		matrix = m;
 		requests = r;
 		zones = z;
 		cars = c;
-		mseconds = ms;
 		solution = new Solution();
 		solution.generateInitial(requests, matrix, zones,cars);
 		solution_best = solution;
@@ -26,15 +29,8 @@ public class AnnealLoop extends Thread{
 	public void run() {
 		int delta;
 		int start = 100;
-		/*
-		while(mseconds < nMinutes*100) {
-			if (Math.random() > 0.7) {
-				carbool = false;
-			}
-			else {
-				carbool = true;
-			}
-			carbool = true;
+		while(run) {
+			
 			solution.mutate(cars, zones, requests, carbool, nNeighbours);
 			delta = solution.getCost() - solution_best.getCost();
 			if(delta <= 0) {
@@ -44,16 +40,27 @@ public class AnnealLoop extends Thread{
 				if(Math.random() >= Math.exp(-delta/start*1.0)) {
 					solution_best = solution;
 				}
-			}
+			}			
 		}
-		*/
-		while(mseconds < 5000) {
-			System.out.println(mseconds);
-		}
+		
 		
 	}
 	
 	public void startLoop() {
+		run = true;
+		running = true;
 		this.start();
+		System.out.println("Thread "+ tid + ": started.");
 	}
+	
+	public void setCarbool() {
+		carbool = false;
+	}
+
+	public Solution stopLoop() {
+		run = false;
+		System.out.println("Thread "+ tid + ": stopped.");
+		return solution_best;
+	}
+
 }
