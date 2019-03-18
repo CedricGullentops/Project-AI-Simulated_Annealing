@@ -195,6 +195,8 @@ public class Solution {
 			}
 			//Run through the Unassigned list and try to assign an available car to each unassigned request.
 	        for (int l=0; l<Unassigned_Requests.size(); l++){
+	        	System.out.println(Unassigned_Requests.get(l)[0]);
+        		System.out.println(l);
 	        	for (int m=0; m<freecars.size(); m++){
 	        		//If a free car is listed in the requests possible car list check if it is in a neighbouring zone and assign it.
 	        		if (requests.get(Unassigned_Requests.get(l)[0]).getCars().contains(freecars.get(m))){
@@ -283,12 +285,12 @@ public class Solution {
 		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
 			
 			System.out.println("Writing output file...");
-			/*
+			
 			System.out.println(cost + " cost");
 			System.out.println(Vehicle_assignments.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
-			*/
+			
 		    StringBuilder sb = new StringBuilder();
 		    sb.append(cost);
 		    sb.append("\n");
