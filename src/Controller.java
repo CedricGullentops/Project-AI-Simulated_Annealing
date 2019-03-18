@@ -31,7 +31,7 @@ public class Controller {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/100_5_14_25.csv");
+				fr = new FileInputStream("examples/210_5_33_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
 						//System.out.println(ccounter + " . " + counter + ". " + input);
@@ -77,7 +77,7 @@ public class Controller {
 			createOverlapMatrix();
 			System.out.println("Overlap matrix generated @ " + mseconds + " ms");
 			solution = new Solution();
-			solution.generateInitial(requests, matrix, zones);
+			solution.generateInitial(requests, matrix, zones, cars);
 			System.out.println("Initial solution generated @ "+ mseconds + " ms");
 			simAnnealing();
 			System.out.println("Stopped algorithm after @ "+ mseconds + " ms");
@@ -90,12 +90,13 @@ public class Controller {
 	
 	private static void simAnnealing(int tcount) {
 		int delta,start = 100,n=0;
+
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
 		for(int i=0;i < tcount;i++) {
-			threads.add(new AnnealLoop(requests,zones,cars));
+			threads.add(new AnnealLoop(requests,zones,cars,matrix));
 			threads.get(i).startLoop();
 		}
-		
+
 		while(mseconds < nMinutes*100) {
 			if (Math.random() > 0.7) {
 				carbool = false;

@@ -7,6 +7,7 @@ public class AnnealLoop extends Thread{
 	private static ArrayList<Zone> zones = new ArrayList<Zone>();
 	private static ArrayList<Car> cars = new ArrayList<Car>();
 	private static OverlapMatrix matrix;
+	boolean carbool;
 	
 	public AnnealLoop(ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m) {
 		matrix = m;
@@ -14,7 +15,7 @@ public class AnnealLoop extends Thread{
 		zones = z;
 		cars = c;
 		solution = new Solution();
-		solution.generateInitial(requests, matrix, zones);
+		solution.generateInitial(requests, matrix, zones,cars);
 		solution_best = solution;
 	}
 	

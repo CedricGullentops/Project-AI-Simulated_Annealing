@@ -4,6 +4,13 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Todo Laurens:	- make sure each car has a zone
+ * 					- make functions
+ * Todo Cédric:		- assigning cars to multiple unassigned requests
+ */
+
+
 public class Solution {
 	private int cost;
 	private ArrayList<int[]> Vehicle_assignments;
@@ -25,7 +32,7 @@ public class Solution {
 	/**
 	 * Generate an initial solution
 	 */
-	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones)
+	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones, ArrayList<Car> cars)
 	{
 		// variables used in function
 		int i, j, k, l;
