@@ -15,12 +15,14 @@ public class Controller {
 	private static OverlapMatrix matrix;
 	private static Solution solution,solution_best;
 	private static Timer timer = new Timer();
-	private static double mseconds = 0;
+	private static Double mseconds;
 	private static int nMinutes = 5;
 	private static int nNeighbours = 3;
 	static int tcount = 1;
 	
+	
 	public static void main(String [] args) {
+		mseconds =  new Double(0);
 		timer.scheduleAtFixedRate(new TimerTask() {
 			  @Override
 			  public void run() {
@@ -32,7 +34,7 @@ public class Controller {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/210_5_33_25.csv");
+				fr = new FileInputStream("examples/100_5_14_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
 						//System.out.println(ccounter + " . " + counter + ". " + input);
@@ -90,11 +92,9 @@ public class Controller {
 	}
 	
 	private static void simAnnealing() {
-		int delta,start = 100,n=0;
-
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
 		for(int i=0;i < tcount;i++) {
-			threads.add(new AnnealLoop(requests,zones,cars,matrix));
+			threads.add(new AnnealLoop(requests,zones,cars,matrix,mseconds));
 			threads.get(i).startLoop();
 		}
 
