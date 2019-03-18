@@ -5,6 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * Todo Laurens:	- make sure each car has a zone
+ * 					- make functions
+ * Todo Cédric:		- assigning cars to multiple unassigned requests
+ */
+
+
 public class Solution {
 	private int cost;
 	private ArrayList<int[]> Vehicle_assignments;
@@ -26,7 +33,7 @@ public class Solution {
 	/**
 	 * Generate an initial solution
 	 */
-	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones)
+	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones, ArrayList<Car> cars)
 	{
 		// variables used in function
 		int i, j, k, l;
@@ -198,6 +205,8 @@ public class Solution {
 			//Run through the Unassigned list and try to assign an available car to each unassigned request.
 			ArrayList<Integer> toRemove =  new ArrayList<Integer>();
 	        for (int l=0; l<Unassigned_Requests.size(); l++){
+	        	System.out.println(Unassigned_Requests.get(l)[0]);
+        		System.out.println(l);
 	        	for (int m=0; m<freecars.size(); m++){
 	        		//If a free car is listed in the requests possible car list check if it is in a neighbouring zone and assign it.
 	        		System.out.println("\n" + Unassigned_Requests.size());
@@ -295,12 +304,12 @@ public class Solution {
 		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
 			
 			System.out.println("Writing output file...");
-			/*
+			
 			System.out.println(cost + " cost");
 			System.out.println(Vehicle_assignments.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
-			*/
+			
 		    StringBuilder sb = new StringBuilder();
 		    sb.append(cost);
 		    sb.append("\n");
