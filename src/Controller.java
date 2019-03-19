@@ -13,21 +13,21 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
-	private static Solution solution,solution_best;
-	private static Timer timer = new Timer();
-	private static double mseconds=0;
-	private static int runtime = 1;
+	private static Solution solution,solution_best,solution_best_glob;
+	private static int runtime_min = 1;
 	private static int nNeighbours = 3;
-	static int tcount = 2;
+	static boolean carbool = true;
+	private static int tcount = 3;
+	private final static int SHORTMODE = 1;
+	private final static Clock C = new Clock();
+	static int delta;
+	static int start = 100;
+	private final static int MAXITER = 500;
+	private static long iter_counter = 0;
+	private static int init_counter = 1;
 	
 	
 	public static void main(String [] args) {
-		timer.scheduleAtFixedRate(new TimerTask() {
-			  @Override
-			  public void run() {
-			    mseconds++;
-			  }
-			}, 1, 1);
 		FileInputStream fr;
 		int line, counter = 0,ccounter=-1;
 		String input = "";
@@ -77,41 +77,68 @@ public class Controller {
 				e.printStackTrace();
 			}
 			createOverlapMatrix();
-			System.out.println("Overlap matrix generated @ " + mseconds + " ms");
-			solution = new Solution();
-			solution.generateInitial(requests, matrix, zones, cars);
-			System.out.println("Initial solution generated @ "+ mseconds + " ms");
+			System.out.println("Overlap matrix generated @ " + C.displayTime());
 			simAnnealing();
-			System.out.println("Stopped algorithm @ "+ mseconds + " ms");
+			System.out.println("Stopped algorithm @ "+ C.displayTime());
 			solution.printCSV();
-			System.out.println("Program exitted @ "+ mseconds + " ms");
-			System.exit(0);
-			
-			
+			System.out.println("Program exitted @ "+ C.displayTime());
+			System.exit(0);			
 	}
 	
-	private static void simAnnealing() {
+	private static void simAnnealing(){
+		int runtime_ms = runtime_min*60000/(1+SHORTMODE*99);
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
 		Solution temp_sol;
-		for(int i=0;i < tcount;i++) {
-			threads.add(new AnnealLoop(i,requests,zones,cars,matrix));
-			threads.get(i).startLoop();
-		}
+		if(tcount > 1)
+		{
+			for(int i=0;i < tcount-1;i++) {
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix));
+				threads.get(i).startLoop();
+			}
+		}	
+		System.out.println(java.lang.Thread.activeCount());
+		
+		solution = new Solution();
+		solution.generateInitial(requests, matrix, zones,cars);
+		solution_best = solution;
+		solution_best_glob = solution;
 		while(true) {
-			System.out.println(mseconds);
-			
-			if(mseconds >= runtime*600) {
-				for(int i=0;i < tcount;i++) {
-					temp_sol = threads.get(i).stopLoop();
-					if(temp_sol.getCost() <= solution.getCost()) {
-						solution = temp_sol;
+			if(C.cTime() >= runtime_ms) {
+				if(tcount > 1)
+				{
+					for(int i=0;i < tcount-1;i++) {
+						temp_sol = threads.get(i).stopLoop();
+						if(temp_sol.getCost() <= solution_best_glob.getCost()) {
+							solution_best_glob = temp_sol;
+						}
 					}
 				}
 				break;
 			}
-			
+			simLoop();			
 		}
-
+		solution = solution_best_glob;
+	}
+	
+	static public void simLoop() {
+		solution.mutate(cars, zones, requests, carbool, nNeighbours); //GIVES ERRORS -> comment out to run without(ctrl + /)
+		delta = solution.getCost() - solution_best.getCost();
+		if (iter_counter >= MAXITER) {
+			init_counter++;
+			solution.generateInitial(requests, matrix, zones, cars);
+			return;
+		}
+		if(delta < 0) {
+			solution_best = solution;
+			solution_best_glob = solution;
+			iter_counter = 0;
+		}
+		else {
+			iter_counter++;
+			if(Math.random() >= Math.exp(-delta/start*1.0)) {
+				solution_best = solution;
+			}
+		}
 		
 	}
 
@@ -214,4 +241,6 @@ public class Controller {
 		}
 		return false;
 	}
+	
+	
 }

@@ -4,18 +4,20 @@ import java.util.TimerTask;
 
 public class AnnealLoop extends Thread{
 	
-	private Solution solution,solution_best;
+	private Solution solution,solution_best,solution_best_glob;
 	private static ArrayList<Request> requests = new ArrayList<Request>();
 	private static ArrayList<Zone> zones = new ArrayList<Zone>();
 	private static ArrayList<Car> cars = new ArrayList<Car>();
 	private static OverlapMatrix matrix;
 	private boolean carbool;
 	private static int nNeighbours = 3;
-	private boolean run=false,running=false;
+	private boolean run=false;
 	private int tid;
+	private final int MAXITER = 500;
+	private long iter_counter = 0;
+	private int init_counter = 1;
 	
 	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m) {
-		
 		tid = id+1;
 		matrix = m;
 		requests = r;
@@ -24,19 +26,27 @@ public class AnnealLoop extends Thread{
 		solution = new Solution();
 		solution.generateInitial(requests, matrix, zones,cars);
 		solution_best = solution;
+		solution_best_glob = solution;
 	}
 	
 	public void run() {
 		int delta;
 		int start = 100;
 		while(run) {
-			
-			solution.mutate(cars, zones, requests, carbool, nNeighbours);
+			solution.mutate(cars, zones, requests, carbool, nNeighbours);	//GIVES ERRORS -> comment out to run without(ctrl + /)
 			delta = solution.getCost() - solution_best.getCost();
-			if(delta <= 0) {
+			if (iter_counter >= MAXITER) {
+				init_counter++;
+				solution.generateInitial(requests, matrix, zones, cars);
+				continue;
+			}
+			if(delta < 0) {
 				solution_best = solution;
+				solution_best_glob = solution;
+				iter_counter = 0;
 			}
 			else {
+				iter_counter++;
 				if(Math.random() >= Math.exp(-delta/start*1.0)) {
 					solution_best = solution;
 				}
@@ -48,7 +58,6 @@ public class AnnealLoop extends Thread{
 	
 	public void startLoop() {
 		run = true;
-		running = true;
 		this.start();
 		System.out.println("Thread "+ tid + ": started.");
 	}
@@ -59,8 +68,8 @@ public class AnnealLoop extends Thread{
 
 	public Solution stopLoop() {
 		run = false;
-		System.out.println("Thread "+ tid + ": stopped.");
-		return solution_best;
+		System.out.println("Thread "+ tid + ": stopped after "+ iter_counter + " iterations after "+ init_counter +" inits.");
+		return solution_best_glob;
 	}
 
 }

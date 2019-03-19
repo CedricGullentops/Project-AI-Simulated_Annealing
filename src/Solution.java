@@ -37,6 +37,12 @@ public class Solution {
 	{
 		// variables used in function
 		int i, j, k, l;
+		Vehicle_assignments = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
+		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
+		/*TODO: moet dit geen arraylist van integer ipv arraylist van array zijn?*/ 
+		Unassigned_Requests = new ArrayList<int[]>();
+		cost = 0;
+		
 		int carZone;
 		Integer currentCar;
 		boolean possible, carPossible;
@@ -47,7 +53,6 @@ public class Solution {
 		req_temp = requests;
 		this.zones = zones; // we assume zones are ordened !!!!!!!!!!!!!!!
 		// print for starting initial solution
-		System.out.println("Creating initial solution...");
 		// iterate over each element in requests
 		for (i = 0 ; i < requests.size() ; i++)
 		{
@@ -174,9 +179,7 @@ public class Solution {
 	 */
 	public void mutate(ArrayList<Car> cars, ArrayList<Zone> zones, ArrayList<Request> requests, boolean car, int step_amount)
 	{
-		if(true)
-			return;
-		System.out.println("New mutation");
+		//System.out.println("New mutation");
 		int nzones = zones.size();
 		int ncars = cars.size();
 		Random rand = new Random();
