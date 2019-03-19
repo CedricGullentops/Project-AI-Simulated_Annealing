@@ -4,7 +4,7 @@ import java.util.TimerTask;
 
 public class AnnealLoop extends Thread{
 	
-	private Solution solution,solution_best,solution_best_glob;
+	private Solution solution,solution_best,solution_best_glob,solution_init;
 	private static ArrayList<Request> requests = new ArrayList<Request>();
 	private static ArrayList<Zone> zones = new ArrayList<Zone>();
 	private static ArrayList<Car> cars = new ArrayList<Car>();
@@ -23,10 +23,11 @@ public class AnnealLoop extends Thread{
 		requests = r;
 		zones = z;
 		cars = c;
-		solution = new Solution();
-		solution.generateInitial(requests, matrix, zones,cars);
-		solution_best = solution;
-		solution_best_glob = solution;
+		solution_init = new Solution();
+		solution_init.generateInitial(requests, matrix, zones,cars);
+		solution = solution_init;
+		solution_best = solution_init;
+		solution_best_glob = solution_init;
 	}
 	
 	public void run() {
@@ -37,7 +38,8 @@ public class AnnealLoop extends Thread{
 			delta = solution.getCost() - solution_best.getCost();
 			if (iter_counter >= MAXITER) {
 				init_counter++;
-				solution.generateInitial(requests, matrix, zones, cars);
+				solution = solution_init;
+				solution_best = solution_init;
 				continue;
 			}
 			if(delta < 0) {

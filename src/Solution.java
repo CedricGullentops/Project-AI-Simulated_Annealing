@@ -36,13 +36,7 @@ public class Solution {
 	public void generateInitial(ArrayList<Request> requests, OverlapMatrix matrix, ArrayList<Zone> zones, ArrayList<Car> cars)
 	{
 		// variables used in function
-		int i, j, k, l;
-		Vehicle_assignments = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
-		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
-		/*TODO: moet dit geen arraylist van integer ipv arraylist van array zijn?*/ 
-		Unassigned_Requests = new ArrayList<int[]>();
-		cost = 0;
-		
+		int i, j, k, l;		
 		int carZone;
 		Integer currentCar;
 		boolean possible, carPossible;

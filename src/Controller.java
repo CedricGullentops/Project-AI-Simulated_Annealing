@@ -13,7 +13,7 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
-	private static Solution solution,solution_best,solution_best_glob;
+	private static Solution solution,solution_best,solution_best_glob,solution_init;
 	private static int runtime_min = 1;
 	private static int nNeighbours = 3;
 	static boolean carbool = true;
@@ -98,10 +98,11 @@ public class Controller {
 		}	
 		System.out.println(java.lang.Thread.activeCount());
 		
-		solution = new Solution();
-		solution.generateInitial(requests, matrix, zones,cars);
-		solution_best = solution;
-		solution_best_glob = solution;
+		solution_init = new Solution();
+		solution_init.generateInitial(requests, matrix, zones,cars);
+		solution = solution_init;
+		solution_best = solution_init;
+		solution_best_glob = solution_init;
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
 				if(tcount > 1)
@@ -125,7 +126,8 @@ public class Controller {
 		delta = solution.getCost() - solution_best.getCost();
 		if (iter_counter >= MAXITER) {
 			init_counter++;
-			solution.generateInitial(requests, matrix, zones, cars);
+			solution = solution_init;
+			solution_best = solution_init;
 			return;
 		}
 		if(delta < 0) {
