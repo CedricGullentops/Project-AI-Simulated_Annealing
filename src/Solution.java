@@ -295,6 +295,7 @@ public class Solution {
 	        	int index = toRemove.get(i);
 	        	Unassigned_Requests.remove(index);
 	        }
+	        this.calculateCost();
 		}
 		
 		
@@ -377,6 +378,7 @@ public class Solution {
 	        	Unassigned_Requests.remove(index);
 	        }
 		}
+		this.calculateCost();
 	}
 	
 	public void printCSV() {

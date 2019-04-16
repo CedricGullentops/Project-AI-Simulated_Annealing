@@ -119,9 +119,9 @@ public class Controller {
 				break;
 			}
 			simLoop();	
-			if (nmutations >= 100){
-				break;
-			}
+			//if (nmutations >= 100){
+			//	break;
+			//}
 			nmutations++;
 		}
 		System.out.println("Did " + Integer.toString(nmutations) + " mutations.");
