@@ -77,7 +77,9 @@ public class Controller {
 			}
 			createOverlapMatrix();
 			System.out.println("Overlap matrix generated @ " + C.displayTime());
-			simAnnealing();
+			//simAnnealing();
+			solution = new Solution();
+			solution.generateInitial(requests, matrix, zones, cars);
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
 			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());

@@ -7,8 +7,7 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * Todo Laurens:	- make sure each car has a zone
- * 					- make functions
+ * Todo Laurens:	- make functions
  * Todo Cédric:		- assigning cars to multiple unassigned requests
  */
 
@@ -27,7 +26,6 @@ public class Solution {
 	public Solution(){
 		Vehicle_assignments = new ArrayList<int[]>(); 	// 0 = car, 1 = zone
 		Assigned_Requests = new ArrayList<int[]>();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
-		/*TODO: moet dit geen arraylist van integer ipv arraylist van array zijn?*/ 
 		Unassigned_Requests = new ArrayList<int[]>();	// 0 = id
 	}
 	
@@ -39,17 +37,27 @@ public class Solution {
 	{
 		// variables used in function
 		this.matrix = matrix;
-		int i, j, k, l;		
+		int i, j, k, l, m;		
 		int carZone;
 		Integer currentCar;
 		boolean possible, carPossible;
 		Request currentRequest;
-		int[] currentAssignedRequest, currentAssignedVehicle, assignment, unassignment;
+		int[] currentAssignedRequest, currentAssignedVehicle, assignment, unassignment, unassignedVehicles;
 		assignment = new int[2];
 		unassignment = new int[1];
 		req_temp = requests;
 		this.zones = zones; // we assume zones are ordened !!!!!!!!!!!!!!!
 		// print for starting initial solution
+		// set requests
+		this.setReq_temp(requests);
+		// add all vehicles to the unassigned vehicles list
+		// iterate over vehicles
+		unassignedVehicles = new int[cars.size()];
+		for (m = 0; m < cars.size(); m++)
+		{
+			unassignedVehicles[m] = cars.get(m).getId();
+		}
+			
 		// iterate over each element in requests
 		for (i = 0 ; i < requests.size() ; i++)
 		{
@@ -106,16 +114,18 @@ public class Solution {
 					{
 						//System.out.println("Car number " + currentCar + " was possible for request number " + currentRequest.getId());
 						// assign zone to car
-						assignment = new int[3];
+						assignment = new int[2];
 						assignment[0] = currentCar;
 						assignment[1] = currentRequest.getZone();
-						assignment[2] = 0;
 						//System.out.println("Assigning car " + assignment[0] + " to zone " + assignment[1]);
 						this.getVehicle_assignments().add(assignment);
+						// set cars location in unassigned vehicle list to -1
+						unassignedVehicles[currentCar] = -1;
 						// assign car to request
-						assignment = new int[2];
+						assignment = new int[3];
 						assignment[0] = currentRequest.getId();
 						assignment[1] = currentCar;
+						assignment[2] = 0;
 						//System.out.println("Assigning car " + assignment[1] + " to request " + assignment[0]);
 						this.getAssigned_Requests().add(assignment);
 						// set possible to true and continue to next request
@@ -163,6 +173,20 @@ public class Solution {
 				this.getUnassigned_Requests().add(unassignment);
 			}
 		}
+		// check if every car has received a zone
+		// iterate over unassigned vehicles
+		for (m = 0; m < unassignedVehicles.length; m++)
+		{
+			if (unassignedVehicles[m] != -1)
+			{
+				// assign zone to car
+				assignment = new int[2];
+				assignment[0] = m;
+				assignment[1] = 0;
+				this.getVehicle_assignments().add(assignment);
+			}
+		}
+		this.calculateCost();
 	}
 	
 	
@@ -404,6 +428,32 @@ public class Solution {
 	}
 	
 	/**
+	 * calculate the cost of a solution
+	 */
+	public void calculateCost()
+	{
+		int i, j;
+		ArrayList<int[]> Assigned = this.getAssigned_Requests();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
+		ArrayList<int[]> Unassigned = this.getUnassigned_Requests();	// 0 = id
+		ArrayList<Request> req = this.getReq_temp();
+		int cost_tmp = 0;
+		// iterate over assigned requests
+		for (i = 0; i < Assigned.size(); i++)
+		{
+			if (Assigned.get(i)[2] == 1)
+			{
+				cost_tmp += req.get(Assigned.get(i)[0]).getP2();
+			}
+		}
+		// iterate over assigned requests
+		for (j = 0; j < Unassigned.size(); j++)
+		{
+			cost_tmp += req.get(Unassigned.get(j)[0]).getP1();
+		}
+		this.setCost(cost_tmp);
+	}
+	
+	/**
 	 * Getters and setters (Automatically generated)
 	 */
 	public int getCost() {
@@ -437,4 +487,14 @@ public class Solution {
 	public void setUnassigned_Requests(ArrayList<int[]> unassigned_Requests) {
 		Unassigned_Requests = unassigned_Requests;
 	}
+	
+	public ArrayList<Request> getReq_temp() {
+		return req_temp;
+	}
+
+	public void setReq_temp(ArrayList<Request> req_temp) {
+		this.req_temp = req_temp;
+	}
+
+	
 }
