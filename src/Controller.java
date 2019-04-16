@@ -16,8 +16,8 @@ public class Controller {
 	private static Solution solution,solution_best,solution_best_glob,solution_init;
 	private static int runtime_min = 1;
 	private static int nNeighbours = 3;
-	static boolean carbool = true;
-	private static int tcount = 3;
+	static boolean carbool = false;
+	private static int tcount = 1;
 	private final static int SHORTMODE = 1;
 	private final static Clock C = new Clock();
 	static int delta;
@@ -25,7 +25,6 @@ public class Controller {
 	private final static int MAXITER = 500;
 	private static long iter_counter = 0;
 	private static int init_counter = 1;
-	
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -96,13 +95,14 @@ public class Controller {
 				threads.get(i).startLoop();
 			}
 		}	
-		System.out.println(java.lang.Thread.activeCount());
+		System.out.println("Number of active threads: " + java.lang.Thread.activeCount());
 		
 		solution_init = new Solution();
 		solution_init.generateInitial(requests, matrix, zones,cars);
 		solution = solution_init;
 		solution_best = solution_init;
 		solution_best_glob = solution_init;
+		int nmutations = 1;
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
 				if(tcount > 1)
@@ -116,13 +116,18 @@ public class Controller {
 				}
 				break;
 			}
-			simLoop();			
+			simLoop();	
+			if (nmutations >= 100){
+				break;
+			}
+			nmutations++;
 		}
+		System.out.println("Did " + Integer.toString(nmutations) + " mutations.");
 		solution = solution_best_glob;
 	}
 	
 	static public void simLoop() {
-		solution.mutate(cars, zones, requests, carbool, nNeighbours); //GIVES ERRORS -> comment out to run without(ctrl + /)
+		solution.mutate(cars, zones, requests, carbool, nNeighbours);
 		delta = solution.getCost() - solution_best.getCost();
 		if (iter_counter >= MAXITER) {
 			init_counter++;
