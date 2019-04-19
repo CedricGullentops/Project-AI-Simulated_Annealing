@@ -13,9 +13,6 @@ public class AnnealLoop extends Thread{
 	private static int nNeighbours = 3;
 	private boolean run=false;
 	private int tid;
-	private final int MAXITER = 500;
-	private long iter_counter = 0;
-	private int init_counter = 1;
 	
 	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m) {
 		tid = id+1;
@@ -36,19 +33,11 @@ public class AnnealLoop extends Thread{
 		while(run) {
 			solution.mutate(cars, zones, requests, carbool, nNeighbours);	//GIVES ERRORS -> comment out to run without(ctrl + /)
 			delta = solution.getCost() - solution_best.getCost();
-			if (iter_counter >= MAXITER) {
-				init_counter++;
-				solution = solution_init;
-				solution_best = solution_init;
-				continue;
-			}
 			if(delta < 0) {
 				solution_best = solution;
 				solution_best_glob = solution;
-				iter_counter = 0;
 			}
 			else {
-				iter_counter++;
 				if(Math.random() >= Math.exp(-delta/start*1.0)) {
 					solution_best = solution;
 				}
@@ -70,7 +59,6 @@ public class AnnealLoop extends Thread{
 
 	public Solution stopLoop() {
 		run = false;
-		System.out.println("Thread "+ tid + ": stopped after "+ iter_counter + " iterations after "+ init_counter +" inits.");
 		return solution_best_glob;
 	}
 

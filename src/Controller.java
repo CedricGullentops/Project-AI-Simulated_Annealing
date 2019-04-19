@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,14 +18,12 @@ public class Controller {
 	private static int runtime_min = 1;
 	private static int nNeighbours = 3;
 	static boolean carbool = false;
-	private static int tcount = 1;
-	private final static int SHORTMODE = 1;
+	private static int tcount = 4;
+	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	static int delta;
 	static int start = 100;
-	private final static int MAXITER = 500;
-	private static long iter_counter = 0;
-	private static int init_counter = 1;
+	public static int carboolcount = 0;
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -129,21 +128,21 @@ public class Controller {
 	}
 	
 	static public void simLoop() {
+		Random random = new Random();
+		if (random.nextFloat() < 70.0/100.0){
+			carbool = true;
+			carboolcount++;
+		}
+		else{
+			carbool = false;
+		}
 		solution.mutate(cars, zones, requests, carbool, nNeighbours);
 		delta = solution.getCost() - solution_best.getCost();
-		if (iter_counter >= MAXITER) {
-			init_counter++;
-			solution = solution_init;
-			solution_best = solution_init;
-			return;
-		}
 		if(delta < 0) {
 			solution_best = solution;
 			solution_best_glob = solution;
-			iter_counter = 0;
 		}
 		else {
-			iter_counter++;
 			if(Math.random() >= Math.exp(-delta/start*1.0)) {
 				solution_best = solution;
 			}
