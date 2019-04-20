@@ -3,8 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Controller {
 	private static ArrayList<Request> requests = new ArrayList<Request>();
@@ -14,16 +12,16 @@ public class Controller {
 	private static Zone zone;
 	private static Car car;
 	private static OverlapMatrix matrix;
-	private static Solution solution,solution_best,solution_best_glob,solution_init;
+	private static Solution solution, solution_best, solution_best_glob;
+	private static Solution solution_init = new Solution();
 	private static int runtime_min = 1;
-	private static int nNeighbours = 3;
+	private static int nNeighbours = 5;
 	static boolean carbool = false;
 	private static int tcount = 4;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	static int delta;
 	static int start = 100;
-	public static int carboolcount = 0;
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -77,8 +75,6 @@ public class Controller {
 			createOverlapMatrix();
 			System.out.println("Overlap matrix generated @ " + C.displayTime());
 			simAnnealing();
-			//solution = new Solution();
-			//solution.generateInitial(requests, matrix, zones, cars);
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
 			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());
@@ -92,7 +88,7 @@ public class Controller {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start));
 				threads.get(i).startLoop();
 			}
 		}	
@@ -100,38 +96,36 @@ public class Controller {
 		
 		solution_init = new Solution();
 		solution_init.generateInitial(requests, matrix, zones,cars);
-		solution = solution_init;
-		solution_best = solution_init;
+		solution = new Solution(solution_init);
+		solution_best = new Solution(solution_init);
 		solution_best_glob = solution_init;
 		int nmutations = 1;
+		Random random = new Random();
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
+				System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
 				if(tcount > 1)
 				{
 					for(int i=0;i < tcount-1;i++) {
 						temp_sol = threads.get(i).stopLoop();
-						if(temp_sol.getCost() <= solution_best_glob.getCost()) {
+						System.out.println("Thread " + Integer.toString(i) + " cost: " + Integer.toString(temp_sol.getCost()));
+						if(temp_sol.getCost() < solution_best_glob.getCost()) {
 							solution_best_glob = temp_sol;
 						}
 					}
 				}
 				break;
 			}
-			simLoop();	
-			//if (nmutations >= 100){
-			//	break;
-			//}
+			simLoop(random);	
 			nmutations++;
 		}
-		System.out.println("Did " + Integer.toString(nmutations) + " mutations.");
+		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 		solution = solution_best_glob;
 	}
 	
-	static public void simLoop() {
-		Random random = new Random();
-		if (random.nextFloat() < 70.0/100.0){
+	static public void simLoop(Random random) {
+		if (random.nextFloat() < 30.0/100.0){
 			carbool = true;
-			carboolcount++;
 		}
 		else{
 			carbool = false;
@@ -139,15 +133,17 @@ public class Controller {
 		solution.mutate(cars, zones, requests, carbool, nNeighbours);
 		delta = solution.getCost() - solution_best.getCost();
 		if(delta < 0) {
-			solution_best = solution;
-			solution_best_glob = solution;
-		}
-		else {
-			if(Math.random() >= Math.exp(-delta/start*1.0)) {
-				solution_best = solution;
+			solution_best.copySolution(solution);
+			if (solution_best_glob.getCost() > solution_best.getCost()){
+				solution_best_glob.copySolution(solution_best);
 			}
 		}
-		
+		else {
+			if(Math.random() >= 1-Math.exp(-delta/start*1.0)) {
+				solution_best.copySolution(solution);
+			}
+		}
+		solution.copySolution(solution_best);
 	}
 
 	static private void processInputData(int ccounter,int counter,int input){

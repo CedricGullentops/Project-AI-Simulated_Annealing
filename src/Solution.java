@@ -2,15 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
-
-/**
- * Todo Laurens:	- make functions
- * Todo Cédric:		- assigning cars to multiple unassigned requests
- */
-
 
 public class Solution {
 	private int cost;
@@ -29,6 +21,25 @@ public class Solution {
 		Unassigned_Requests = new ArrayList<int[]>();	// 0 = id
 	}
 	
+	public Solution(Solution another){
+		this.cost = another.cost;
+		this.Vehicle_assignments = another.Vehicle_assignments;
+		this.Assigned_Requests = another.Assigned_Requests;
+		this.Unassigned_Requests = another.Unassigned_Requests;
+		this.req_temp = another.req_temp;
+		this.zones = another.zones;
+		this.matrix = another.matrix;
+	}
+	
+	public void copySolution(Solution another){
+		this.cost = another.cost;
+		this.Vehicle_assignments = another.Vehicle_assignments;
+		this.Assigned_Requests = another.Assigned_Requests;
+		this.Unassigned_Requests = another.Unassigned_Requests;
+		this.req_temp = another.req_temp;
+		this.zones = another.zones;
+		this.matrix = another.matrix;
+	}
 	
 	/**
 	 * Generate an initial solution
@@ -187,6 +198,7 @@ public class Solution {
 			}
 		}
 		this.calculateCost();
+		System.out.println("Initial cost: " + this.getCost());
 	}
 	
 	
@@ -386,7 +398,7 @@ public class Solution {
 			
 			System.out.println("Writing output file...");
 			
-			System.out.println(cost + " cost");
+			System.out.println("Final solution cost: "+ cost);
 			System.out.println(Vehicle_assignments.size() + " vehicle assignments");
 			System.out.println(Assigned_Requests.size() + " request assignments");
 			System.out.println(Unassigned_Requests.size() + " request unassignments");
