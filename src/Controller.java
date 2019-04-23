@@ -22,6 +22,8 @@ public class Controller {
 	private final static Clock C = new Clock();
 	static int delta;
 	static int start = 100;
+	static private boolean toPlot = true;
+	static private final PlotData plot = new PlotData("Score vs Time");
 	
 	public static void main(String [] args) {
 		FileInputStream fr;
@@ -78,7 +80,12 @@ public class Controller {
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
 			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());
-			System.exit(0);			
+			if (toPlot){
+				plot.createPlot();
+			}
+			else{
+				System.exit(0);			
+			}		
 	}
 	
 	private static void simAnnealing(){
@@ -124,7 +131,7 @@ public class Controller {
 	}
 	
 	static public void simLoop(Random random) {
-		if (random.nextFloat() < 30.0/100.0){
+		if (random.nextFloat() < 70.0/100.0){
 			carbool = true;
 		}
 		else{
@@ -136,6 +143,9 @@ public class Controller {
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
 				solution_best_glob.copySolution(solution_best);
+				if (toPlot){
+					plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
+				}
 			}
 		}
 		else {
