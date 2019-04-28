@@ -12,11 +12,16 @@ public class AnnealLoop extends Thread{
 	private int nNeighbours = 3;
 	private boolean run=false;
 	private int tid;
-	private int start = 100;
+	private int start_i,start;
+	private int counter;
+	private int MAXITER;
+	private Random random;
 	
-	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start) {
-		this.start = start;
+	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,Random R) {
+		start_i = start;
 		this.nNeighbours = nNeighbours;
+		random = R;
+		MAXITER = M;
 		tid = id+1;
 		matrix = m;
 		requests = r;
@@ -29,29 +34,43 @@ public class AnnealLoop extends Thread{
 	}
 	
 	public void run() {
+		start = start_i;
 		int delta;
-		Random random = new Random();
+		counter = 0;
 		while(run) {
-			if (random.nextFloat() < 70.0/100.0){
+			if (random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0){
 				carbool = true;
 			}
 			else{
 				carbool = false;
 			}
-			solution.mutate(cars, zones, requests, carbool, nNeighbours);
+			solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
 			delta = solution.getCost() - solution_best.getCost();
 			if(delta < 0) {
 				solution_best.copySolution(solution);
 				if (solution_best_glob.getCost() > solution_best.getCost()){
 					solution_best_glob.copySolution(solution_best);
+					counter = 0;
+					start*=10;
+					System.out.println("New best "+tid+":" +solution_best.getCost());
 				}
 			}
 			else {
-				if(Math.random() >= 1-Math.exp(-delta/start*1.0)) {
+				counter++;
+				if(random.nextFloat() >= 1-Math.exp(-delta/(float)start)) {
 					solution_best.copySolution(solution);
 				}
 			}
-			solution.copySolution(solution_best);
+			if(counter > MAXITER) {
+				//solution.copySolution(solution_init);
+				//solution_best.copySolution(solution_init);
+				start /= 5;
+				counter = 0;
+			}
+			else {
+				solution.copySolution(solution_best);
+			}
+				
 		}
 	}
 	

@@ -17,15 +17,21 @@ public class Controller {
 	private static int runtime_min = 1;
 	private static int nNeighbours = 5;
 	static boolean carbool = false;
-	private static int tcount = 4;
+	private static int tcount = 1;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	static int delta;
-	static int start = 100;
+	static int start = 100000;
 	static private boolean toPlot = true;
 	static private final PlotData plot = new PlotData("Score vs Time");
+	static private int counter=0;
+	static private final int MAXITER = 10000;
+	static private Random random;
+	static private long SEED = 100;
 	
 	public static void main(String [] args) {
+		random = new Random();
+		random.setSeed(SEED);
 		FileInputStream fr;
 		int line, counter = 0,ccounter=-1;
 		String input = "";
@@ -95,7 +101,7 @@ public class Controller {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,random));
 				threads.get(i).startLoop();
 			}
 		}	
@@ -107,7 +113,6 @@ public class Controller {
 		solution_best = new Solution(solution_init);
 		solution_best_glob = solution_init;
 		int nmutations = 1;
-		Random random = new Random();
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
 				System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
@@ -123,37 +128,47 @@ public class Controller {
 				}
 				break;
 			}
-			simLoop(random);	
+			simLoop();	
 			nmutations++;
 		}
 		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 		solution = solution_best_glob;
 	}
 	
-	static public void simLoop(Random random) {
-		if (random.nextFloat() < 70.0/100.0){
-			carbool = true;
+	static public void simLoop() {
+		if (random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0){
+			carbool = true;			
 		}
 		else{
 			carbool = false;
 		}
-		solution.mutate(cars, zones, requests, carbool, nNeighbours);
+		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
 		delta = solution.getCost() - solution_best.getCost();
 		if(delta < 0) {
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
+				counter = 0;
 				solution_best_glob.copySolution(solution_best);
+				System.out.println("New best main: "+solution_best.getCost());
 				if (toPlot){
 					plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
 				}
 			}
 		}
 		else {
-			if(Math.random() >= 1-Math.exp(-delta/start*1.0)) {
+			counter++;
+			if(random.nextFloat() >= 1-Math.exp(-delta/start*1.0)) {
 				solution_best.copySolution(solution);
 			}
 		}
-		solution.copySolution(solution_best);
+		if(counter > MAXITER) {
+			solution.copySolution(solution_init);
+			solution_best.copySolution(solution_init);
+			counter = 0;
+		}
+		else {
+			solution.copySolution(solution_best);
+		}
 	}
 
 	static private void processInputData(int ccounter,int counter,int input){

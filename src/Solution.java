@@ -210,11 +210,11 @@ public class Solution {
 	 * if mutating car: unassign all requests to this car and assign now possible unassigned requests.
 	 * if mutating request: 
 	 */
-	public void mutate(ArrayList<Car> cars, ArrayList<Zone> zones, ArrayList<Request> requests, boolean car, int step_amount)
+	public void mutate(ArrayList<Car> cars, ArrayList<Zone> zones, ArrayList<Request> requests, boolean car, int step_amount,Random random)
 	{
 		int nzones = zones.size();
 		int ncars = cars.size();
-		Random rand = new Random();
+
 		//Mutate a number of cars
 		if (car){
 			//Create a list of unique random cars to unassign
@@ -222,13 +222,13 @@ public class Solution {
 			for (int i=0; i<step_amount; i++){	
 				int randomcar;
 				do {
-		        	randomcar = rand.nextInt(ncars);
+		        	randomcar = random.nextInt(ncars);
 		       }while (freecars.contains(randomcar));
 		        freecars.add(randomcar);
 		        //Change the car's zone
 		        for (int k=0; k<Vehicle_assignments.size(); k++){
 		        	if (Vehicle_assignments.get(k)[0] == randomcar){
-		        		Vehicle_assignments.get(k)[1] = rand.nextInt(nzones);
+		        		Vehicle_assignments.get(k)[1] = random.nextInt(nzones);
 		        	}
 		        }
 		        //Add the requests with that car to unassigned and remove from assigned
@@ -318,7 +318,7 @@ public class Solution {
 			for (int i=0; i<step_amount; i++){	
 				int randomrequest;
 				do {
-					randomrequest = rand.nextInt(Assigned_Requests.size());
+					randomrequest = random.nextInt(Assigned_Requests.size());
 		       } while (New_Unassigned.contains(randomrequest));
 				New_Unassigned.add(randomrequest);
 				//Add the new unassigned requests to unassigned, remove from assigned and put the freed car in a list

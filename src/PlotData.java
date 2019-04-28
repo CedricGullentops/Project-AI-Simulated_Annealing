@@ -43,11 +43,5 @@ public class PlotData extends ApplicationFrame{
 	    this.setVisible(true);
 	}
 	
-	public static void main(final String[] args) {
-	    final PlotData testje = new PlotData("XY Series Demo");
-	    testje.addDataPoint(1000, 10);
-	    testje.addDataPoint(800, 15);
-	    testje.addDataPoint(750, 20);
-	    testje.createPlot();
-	}
+
 }
