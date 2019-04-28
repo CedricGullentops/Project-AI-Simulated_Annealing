@@ -250,7 +250,6 @@ public class Solution {
 			
 			//Run through the Unassigned list and try to assign an available car to each unassigned request.
 			ArrayList<Integer> toRemove =  new ArrayList<Integer>();
-			ArrayList<int[]> newAssigned =  new ArrayList<int[]>();
 	        for (int l=0; l<Unassigned_Requests.size(); l++){
 	        	for (int m=0; m<cars.size(); m++){
 	        		//If a free car is listed in the requests possible car list check if it is in a neighbouring zone and assign it.
@@ -268,9 +267,9 @@ public class Solution {
 	        			}
 	        			if (zones.get(requests.get(Unassigned_Requests.get(l)[0]).getZone()).getId() == zoneid){
 	        				boolean overlaps = false;
-	        				for(int j = 0; j < newAssigned.size(); j++){
-	        					if (newAssigned.get(j)[1] == cars.get(m).getId()){
-	        						if (matrix.get(newAssigned.get(j)[0], Unassigned_Requests.get(l)[0])){
+	        				for(int j = 0; j < Assigned_Requests.size(); j++){
+	        					if (Assigned_Requests.get(j)[1] == cars.get(m).getId()){
+	        						if (matrix.get(Assigned_Requests.get(j)[0], Unassigned_Requests.get(l)[0])){
 	        							overlaps = true;
 	        						}
 	        					}
@@ -279,16 +278,15 @@ public class Solution {
 	        					continue;
 	        				}
 	        				int[] new_assigned = {Unassigned_Requests.get(l)[0], cars.get(m).getId(), 0};
-	        				newAssigned.add(new_assigned);
 	        				Assigned_Requests.add(new_assigned);
 	        				toRemove.add(l);
 	        				break;
 	        			}
 	        			else if (zones.get(requests.get(Unassigned_Requests.get(l)[0]).getZone()).isNeighbour(zoneid)){
 	        				boolean overlaps = false;
-	        				for(int j = 0; j < newAssigned.size(); j++){
-	        					if (newAssigned.get(j)[1] == cars.get(m).getId()){
-	        						if (matrix.get(newAssigned.get(j)[0], Unassigned_Requests.get(l)[0])){
+	        				for(int j = 0; j < Assigned_Requests.size(); j++){
+	        					if (Assigned_Requests.get(j)[1] == cars.get(m).getId()){
+	        						if (matrix.get(Assigned_Requests.get(j)[0], Unassigned_Requests.get(l)[0])){
 	        							overlaps = true;
 	        						}
 	        					}
@@ -297,7 +295,6 @@ public class Solution {
 	        					continue;
 	        				}
 	        				int[] new_assigned = {Unassigned_Requests.get(l)[0], cars.get(m).getId(), 1};
-	        				newAssigned.add(new_assigned);
 	        				Assigned_Requests.add(new_assigned);
 	        				toRemove.add(l);
 	        				break;

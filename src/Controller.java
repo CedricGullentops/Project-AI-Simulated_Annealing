@@ -27,8 +27,8 @@ public class Controller {
 	static private int counter=0;
 	static private final int MAXITER = 25000;
 	static private Random random;
-	static private long SEED = 100;
-	static private double KOELING = 0.99;
+	static long SEED = 100;
+	static private double KOELING = 0.94;
 	
 	public static void main(String [] args) {
 		random = new Random();
@@ -38,7 +38,7 @@ public class Controller {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/100_5_14_25.csv");
+				fr = new FileInputStream("examples/210_5_33_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
 						//System.out.println(ccounter + " . " + counter + ". " + input);
@@ -102,7 +102,7 @@ public class Controller {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED,KOELING));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED+i,KOELING,i));
 				threads.get(i).startLoop();
 			}
 		}	

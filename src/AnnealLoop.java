@@ -17,8 +17,11 @@ public class AnnealLoop extends Thread{
 	private int MAXITER;
 	private Random random = new Random();
 	private double koeling;
+	private final PlotData plot;
+	private final static Clock C = new Clock();
 	
-	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling) {
+	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling, int threadcount) {
+		this.plot = new PlotData("Score vs Time: thread " + Integer.toString(threadcount));
 		this.koeling = koeling;
 		this.random.setSeed(SEED);
 		start_i = start;
@@ -52,6 +55,7 @@ public class AnnealLoop extends Thread{
 				solution_best.copySolution(solution);
 				if (solution_best_glob.getCost() > solution_best.getCost()){
 					solution_best_glob.copySolution(solution_best);
+					plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
 					counter = 0;
 					start *= koeling;
 					System.out.println("New best "+tid+":" +solution_best.getCost());
@@ -89,6 +93,7 @@ public class AnnealLoop extends Thread{
 
 	public Solution stopLoop() {
 		run = false;
+		plot.createPlot();
 		return solution_best_glob;
 	}
 
