@@ -17,7 +17,7 @@ public class Controller {
 	private static int runtime_min = 1;
 	private static int nNeighbours = 5;
 	static boolean carbool = false;
-	private static int tcount = 1;
+	private static int tcount = 4;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	static int delta;
@@ -101,7 +101,7 @@ public class Controller {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,random));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED));
 				threads.get(i).startLoop();
 			}
 		}	
