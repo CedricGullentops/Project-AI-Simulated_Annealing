@@ -56,7 +56,6 @@ public class AnnealLoop extends Thread{
 				if (solution_best_glob.getCost() > solution_best.getCost()){
 					solution_best_glob.copySolution(solution_best);
 					plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
-					counter = 0;
 					start *= koeling;
 					System.out.println("New best "+tid+":" +solution_best.getCost());
 				}
@@ -74,10 +73,7 @@ public class AnnealLoop extends Thread{
 				System.out.println("start value: " + start);
 				counter = 0;
 			}
-			else {
-				solution.copySolution(solution_best);
-			}
-				
+			solution.copySolution(solution_best);	
 		}
 	}
 	

@@ -306,7 +306,6 @@ public class Solution {
 	        	int index = toRemove.get(i);
 	        	Unassigned_Requests.remove(index);
 	        }
-	        this.calculateCost();
 		}
 		
 		//Mutate a number of requests
@@ -445,22 +444,19 @@ public class Solution {
 	public void calculateCost()
 	{
 		int i, j;
-		ArrayList<int[]> Assigned = this.getAssigned_Requests();		// 0 = id, 1 = car, 2 = (0 if car is in zone, 1 if car is in neighbouring zone)
-		ArrayList<int[]> Unassigned = this.getUnassigned_Requests();	// 0 = id
-		ArrayList<Request> req = this.getReq_temp();
 		int cost_tmp = 0;
 		// iterate over assigned requests
-		for (i = 0; i < Assigned.size(); i++)
+		for (i = 0; i < Assigned_Requests.size(); i++)
 		{
-			if (Assigned.get(i)[2] == 1)
+			if (Assigned_Requests.get(i)[2] == 1)
 			{
-				cost_tmp += req.get(Assigned.get(i)[0]).getP2();
+				cost_tmp += req_temp.get(Assigned_Requests.get(i)[0]).getP2();
 			}
 		}
 		// iterate over assigned requests
-		for (j = 0; j < Unassigned.size(); j++)
+		for (j = 0; j < Unassigned_Requests.size(); j++)
 		{
-			cost_tmp += req.get(Unassigned.get(j)[0]).getP1();
+			cost_tmp += req_temp.get(Unassigned_Requests.get(j)[0]).getP1();
 		}
 		this.setCost(cost_tmp);
 	}
