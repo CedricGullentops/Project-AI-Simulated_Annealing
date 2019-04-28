@@ -15,19 +15,20 @@ public class Controller {
 	private static Solution solution, solution_best, solution_best_glob;
 	private static Solution solution_init = new Solution();
 	private static int runtime_min = 1;
-	private static int nNeighbours = 5;
+	private static int nNeighbours = 1;
 	static boolean carbool = false;
 	private static int tcount = 4;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	static int delta;
-	static int start = 100000;
+	static int start = 2000;
 	static private boolean toPlot = true;
 	static private final PlotData plot = new PlotData("Score vs Time");
 	static private int counter=0;
-	static private final int MAXITER = 10000;
+	static private final int MAXITER = 25000;
 	static private Random random;
 	static private long SEED = 100;
+	static private double KOELING = 0.99;
 	
 	public static void main(String [] args) {
 		random = new Random();
@@ -101,7 +102,7 @@ public class Controller {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED,KOELING));
 				threads.get(i).startLoop();
 			}
 		}	
@@ -142,7 +143,7 @@ public class Controller {
 		else{
 			carbool = false;
 		}
-		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
+		solution.mutate(cars, zones, requests, carbool, nNeighbours,random);
 		delta = solution.getCost() - solution_best.getCost();
 		if(delta < 0) {
 			solution_best.copySolution(solution);
