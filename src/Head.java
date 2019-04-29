@@ -155,6 +155,7 @@ public class Head {
 		else{
 			carbool = false;
 		}
+		//-----------------------------------------------------------------------------------
 		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
 		delta = solution.getCost() - solution_best.getCost();
 		System.out.println("delta: " + delta);

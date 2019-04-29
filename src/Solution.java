@@ -25,7 +25,7 @@ public class Solution {
 		this.Vehicle_assignments = new ArrayList<int[]>(another.Vehicle_assignments);
 		this.Assigned_Requests =  new ArrayList<int[]>(another.Assigned_Requests);
 		this.Unassigned_Requests = new ArrayList<int[]>(another.Unassigned_Requests);
-		this.req_temp =  new ArrayList<Request>(another.req_temp);
+		//this.req_temp =  new ArrayList<Request>(another.req_temp);
 		this.matrix = another.matrix;
 	}
 	
@@ -34,7 +34,7 @@ public class Solution {
 		this.Vehicle_assignments = new ArrayList<int[]>(another.Vehicle_assignments);
 		this.Assigned_Requests =  new ArrayList<int[]>(another.Assigned_Requests);
 		this.Unassigned_Requests = new ArrayList<int[]>(another.Unassigned_Requests);
-		this.req_temp =  new ArrayList<Request>(another.req_temp);
+		//this.req_temp =  new ArrayList<Request>(another.req_temp);
 		this.matrix = another.matrix;
 	}
 	
