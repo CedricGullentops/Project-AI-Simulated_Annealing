@@ -15,10 +15,10 @@ public class Head {
 	private Solution solution, solution_best, solution_best_glob;
 	private Solution solution_init = new Solution();
 	private int runtime_min = 1;
-	private int nNeighbours = 3;
+	private int nNeighbours = 1;
 	boolean carbool = false;
 	private int tcount = 1;
-	private final static int SHORTMODE = 0;
+	private final static int SHORTMODE = 1;
 	private final static Clock C = new Clock();
 	int delta;
 	int start = 2000;
@@ -27,7 +27,7 @@ public class Head {
 	private int counter=0;
 	private final int MAXITER = 25000;
 	private Random random;
-	private long SEED = 100;
+	private long SEED = 10;
 	private double KOELING = 0.97;
 	
 	public void runProgram(){
@@ -83,8 +83,12 @@ public class Head {
 			}
 			createOverlapMatrix();
 			System.out.println("Overlap matrix generated @ " + C.displayTime());
+			//solution = new Solution();
+			//solution.generateInitial(requests, matrix, zones, cars);
 			simAnnealing();
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
+			System.out.println("solution cost: " + solution_best_glob.getCost());
+			System.out.println("\t\t\t final size: " + solution_best_glob.getAssigned_Requests().size());
 			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());
 			if (toPlot){
@@ -115,7 +119,7 @@ public class Head {
 		solution_best_glob = new Solution(solution_init);
 		int nmutations = 1;
 		while(true) {
-			if(C.cTime() >= runtime_ms) {
+			if(nmutations > 8/*C.cTime() >= runtime_ms*/) {
 				System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
 				if(tcount > 1)
 				{
@@ -133,17 +137,19 @@ public class Head {
 				break;
 			}
 			simLoop();	
+			System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 			nmutations++;
 		}
 		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
-		System.out.println("before recalc: " + solution.getCost());
-		solution.calculateCost();
-		System.out.println("after recalc: " + solution.getCost());
-		solution.copySolution(solution_best_glob);
+		System.out.println("before recalc: " + solution_best_glob.getCost());
+		solution_best_glob.calculateCost();
+		solution_best_glob.printCSV();
+		System.out.println("\t\t\t this time size: " + solution_best_glob.getAssigned_Requests().size());
+		System.out.println("after recalc: " + solution_best_glob.getCost());
 	}
 	
 	public void simLoop() {
-		if (false /*random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0*/){
+		if (true /*random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0*/){
 			carbool = true;
 		}
 		else{
@@ -151,7 +157,9 @@ public class Head {
 		}
 		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
 		delta = solution.getCost() - solution_best.getCost();
+		System.out.println("delta: " + delta);
 		if(delta < 0) {
+			System.out.println("Het is beter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
 				solution_best_glob.copySolution(solution_best);
@@ -160,13 +168,21 @@ public class Head {
 			}
 		}
 		else {
-			counter++;
 			if(random.nextFloat() >= 1-Math.exp(-delta/(float)start)) {
+				System.out.println("Het is slechter maar geaccepteerd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				solution_best.copySolution(solution);
 			}
-			solution.copySolution(solution_best);
+			else
+			{
+				System.out.println("Het is slechter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
+				solution.copySolution(solution_best);
+				System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
+			}
 		}
+		counter++;
 		if(counter > MAXITER) {
+			System.out.println("Maxiter shizzle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			//solution.copySolution(solution_init);
 			//solution_best.copySolution(solution_init);
 			start *= KOELING;

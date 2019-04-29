@@ -236,15 +236,20 @@ public class Solution {
 						assignment[0] = Assigned_Requests.get(j)[0];
 		        		Unassigned_Requests.add(assignment);
 		        		toRemove.add(Assigned_Requests.get(j)[0]);
+		        		System.out.println("\t to be removed: " + Assigned_Requests.get(j)[0]);
 		        	}
 		        }
 		        for (int j=toRemove.size()-1; j>=0; j--){
-		        	for (int k = 0; k<Assigned_Requests.size(); k++){
+		        	for (int k = Assigned_Requests.size()-1; k >= 0 ; k--){
 		        		if (toRemove.get(j) == Assigned_Requests.get(k)[0]){
-		        			Assigned_Requests.remove(k);
+		        			int rm = Assigned_Requests.get(k)[0];
+		        			this.Assigned_Requests.remove(k);
+		        			System.out.println("\t\t removed: " + rm);
+		        			System.out.println("\t\t\t size: " + Assigned_Requests.size());
+		        			break;
 		        		}
 		        	}
-		        }
+		        }		        
 			}
 			
 			//Run through the Unassigned list and try to assign an available car to each unassigned request.
@@ -252,6 +257,7 @@ public class Solution {
 	        for (int l=0; l<Unassigned_Requests.size(); l++){
 	        	boolean breakfree = false;
 	        	for (int m=0; m<cars.size(); m++){
+	        		//int zoneid = -1;
 	        		//If a free car is listed in the requests possible car list check if it is in a neighbouring zone and assign it.
 	        		if (requests.get(Unassigned_Requests.get(l)[0]).getCars().contains(cars.get(m).getId())){
 	        			int zoneid = -1;
@@ -264,6 +270,7 @@ public class Solution {
 	        			if (zoneid == -1){
 	        				continue;
 	        			}
+	        			//int neighbour = 0;
 	        			int neighbour = zones.get(requests.get(Unassigned_Requests.get(l)[0]).getZone()).isNeighbour(zoneid);
 	        			if (neighbour != 0){
 	        				boolean overlaps = false;
@@ -278,6 +285,7 @@ public class Solution {
 	        				if (!overlaps){
 	        					int[] new_assigned = {Unassigned_Requests.get(l)[0], cars.get(m).getId(), neighbour-1};
     	        				Assigned_Requests.add(new_assigned);
+    	        				System.out.println("Added: " + new_assigned[0]);
     	        				toRemove.add(Unassigned_Requests.get(l)[0]);
     	        				breakfree = true;
 	        				}
@@ -292,9 +300,22 @@ public class Solution {
 	        	for (int j = 0; j<Unassigned_Requests.size(); j++){
 	        		if (toRemove.get(i) == Unassigned_Requests.get(j)[0]){
 	        			Unassigned_Requests.remove(j);
+	        			break;
 	        		}
 	        	}
 	        }
+	        /*
+	        StringBuilder sb = new StringBuilder();
+	        for(int i=0; i< Assigned_Requests.size();i++) {
+	            sb.append("req");
+	            sb.append(Assigned_Requests.get(i)[0]);
+	            sb.append(";");
+	            sb.append("car");
+	            sb.append(Assigned_Requests.get(i)[1]);
+	            sb.append("\n");
+	        }
+	        System.out.println(sb);
+	        */
 		}
 		
 		//Mutate a number of requests
@@ -360,7 +381,7 @@ public class Solution {
 	        	}
 	        }
 			for (int i=toRemove.size()-1; i>=0; i--){
-	        	for (int j = 0; j<Unassigned_Requests.size(); j++){
+	        	for (int j = Unassigned_Requests.size()-1; j >= 0; j--){
 	        		if (toRemove.get(i) == Unassigned_Requests.get(j)[0]){
 	        			Unassigned_Requests.remove(j);
 	        		}
