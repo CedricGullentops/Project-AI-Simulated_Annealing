@@ -12,7 +12,7 @@ public class AnnealLoop extends Thread{
 	private int nNeighbours = 3;
 	private boolean run=false;
 	private int tid;
-	private int start_i,start,end, runtime_min;
+	private int start,end, secondstorun;
 	private int counter;
 	private int MAXITER = 1000;
 	private Random random = new Random();
@@ -20,7 +20,7 @@ public class AnnealLoop extends Thread{
 	private final PlotData plot;
 	private final Clock C;
 	
-	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling, int threadcount, int end, int runtime_min, Clock clock) {
+	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling, int threadcount, int end, int secondstorun, Clock clock) {
 		this.C = clock;
 		this.plot = new PlotData("Score vs Time: thread " + Integer.toString(threadcount));
 		this.koeling = koeling;
@@ -28,7 +28,7 @@ public class AnnealLoop extends Thread{
 		this.start = start;
 		this.end = end;
 		this.nNeighbours = nNeighbours;
-		this.runtime_min = runtime_min;
+		this.secondstorun = secondstorun;
 		MAXITER = M;
 		tid = id+1;
 		matrix = m;
@@ -72,24 +72,16 @@ public class AnnealLoop extends Thread{
 			}
 			counter++;
 			if(counter > MAXITER) {
-				//solution.copySolution(solution_init);
-				//solution_best.copySolution(solution_init);
 				start *= koeling;
-				System.out.println("start value: " + start);
 				counter = 0;
 			}
 			nmutations++;
 			if (nmutations % MAXITER == 0) {
-				//System.out.println("ctime: " + C.cTime());
-				float timeleft = runtime_min * 60 * 1000 - C.cTime();
-				//System.out.println("timeleft: " + timeleft);
+				float timeleft = secondstorun * 1000 - C.cTime();
 				float ratio = nmutations/C.cTime();
-				//System.out.println("ratio: " + ratio);
 				float mutationsleft = ratio * timeleft;
-				//System.out.println("mutationsleft: " + mutationsleft);
 				float templeft = start - end;
 				MAXITER = (int) (mutationsleft / templeft);
-				System.out.println("\t MAXITER changed to: " + MAXITER);
 			}
 		}
 	}

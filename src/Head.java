@@ -14,7 +14,7 @@ public class Head {
 	private OverlapMatrix matrix;
 	private Solution solution, solution_best, solution_best_glob;
 	private Solution solution_init = new Solution();
-	private int runtime_min = 5;
+	private int secondstorun = 1*60;
 	private int nNeighbours = 3;
 	boolean carbool = false;
 	private int tcount = 2;
@@ -23,13 +23,23 @@ public class Head {
 	int delta;
 	int start = 800;
 	int end = 10;
-	private boolean toPlot = true;
+	private boolean toPlot = false;
 	private final PlotData plot = new PlotData("Score vs Time");
 	private int counter=0;
 	private int MAXITER = 1000;
 	private Random random;
 	private long SEED = 10;
 	private double KOELING = 0.99;
+	private String inputfile;
+	private String outputfile;
+	
+	public Head(String inputfile, String outputfile, int secondstorun, long seeds, int nthreads){
+		this.inputfile = inputfile;
+		this.outputfile = outputfile;
+		this.secondstorun = secondstorun;
+		this.SEED = seeds;
+		this.tcount = nthreads;
+	}
 	
 	public void runProgram(){
 		random = new Random();
@@ -39,21 +49,18 @@ public class Head {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/210_5_44_25.csv");
+				fr = new FileInputStream(inputfile);
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
-						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = ""; 
 					}
 					else if((char)line == ';') {
-						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = ""; 
 						counter++;
 					}
 					else if((char)line == '\n') {
-						//System.out.println(ccounter + " . " + counter + ". " + input);
 						processInputData(ccounter, counter, Integer.parseInt(input));
 						input = "";
 						counter = 0;
@@ -66,7 +73,6 @@ public class Head {
 								input = "";
 							}
 						}
-						//System.out.println(ccounter + " . " + counter + ". " + input);
 						input = "";
 					}
 					else {
@@ -76,10 +82,8 @@ public class Head {
 					}
 				}
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			createOverlapMatrix();
@@ -96,13 +100,13 @@ public class Head {
 	}
 	
 	private void simAnnealing(){
-		int runtime_ms = runtime_min*60000/(1+SHORTMODE*99);
+		int runtime_ms = secondstorun * 1000/(1+SHORTMODE*99);
 		ArrayList<AnnealLoop> threads = new ArrayList<AnnealLoop>();		
 		Solution temp_sol = new Solution();
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED+i,KOELING,i,end,runtime_min,C));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED+i,KOELING,i,end,secondstorun,C));
 				threads.get(i).startLoop();
 			}
 		}	
@@ -132,17 +136,16 @@ public class Head {
 			simLoop();	
 			nmutations++;
 			if (nmutations % MAXITER == 0) {
-				float timeleft = runtime_min * 60 * 1000 - C.cTime();
+				float timeleft = secondstorun * 1000 - C.cTime();
 				float ratio = nmutations/C.cTime();
 				float mutationsleft = ratio * timeleft;
 				float templeft = start - end;
 				MAXITER = (int) (mutationsleft / templeft);
-				System.out.println("MAXITER changed to: " + MAXITER);
 			}
 		}
 		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 		solution_best_glob.calculateCost();
-		solution_best_glob.printCSV();
+		solution_best_glob.printCSV(outputfile);
 	}
 	
 	public void simLoop() {
@@ -172,10 +175,7 @@ public class Head {
 		}
 		counter++;
 		if(counter > MAXITER) {
-			//solution.copySolution(solution_init);
-			//solution_best.copySolution(solution_init);
 			start *= KOELING;
-			System.out.println("start value: " + start);
 			counter = 0;
 		}
 	}

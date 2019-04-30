@@ -247,7 +247,6 @@ public class Solution {
 		        for (int j=toRemove.size()-1; j>=0; j--){
 		        	for (int k = Assigned_Requests.size()-1; k >= 0 ; k--){
 		        		if (toRemove.get(j) == Assigned_Requests.get(k)[0]){
-		        			int rm = Assigned_Requests.get(k)[0];
 		        			this.Assigned_Requests.remove(k);
 		        			//System.out.println("\t\t removed: " + rm);
 		        			//System.out.println("\t\t\t size: " + Assigned_Requests.size());
@@ -396,8 +395,8 @@ public class Solution {
 		calculateCost();
 	}
 	
-	public void printCSV() {
-		try (PrintWriter writer = new PrintWriter(new File("solution.csv"))) {
+	public void printCSV(String outputfile) {
+		try (PrintWriter writer = new PrintWriter(new File(outputfile))) {
 			
 			System.out.println("Writing output file...");
 			
