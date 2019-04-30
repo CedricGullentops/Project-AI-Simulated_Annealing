@@ -18,7 +18,7 @@ public class Head {
 	private int nNeighbours = 1;
 	boolean carbool = false;
 	private int tcount = 1;
-	private final static int SHORTMODE = 1;
+	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	int delta;
 	int start = 2000;
@@ -119,7 +119,7 @@ public class Head {
 		solution_best_glob = new Solution(solution_init);
 		int nmutations = 1;
 		while(true) {
-			if(nmutations > 8/*C.cTime() >= runtime_ms*/) {
+			if(C.cTime() >= runtime_ms) {
 				System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
 				if(tcount > 1)
 				{
@@ -156,7 +156,13 @@ public class Head {
 			carbool = false;
 		}
 		//-----------------------------------------------------------------------------------
+		for (int i=0; i<32; i++){
+			System.out.println("before solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
+		}
 		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
+		for (int i=0; i<32; i++){
+			System.out.println("solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
+		}
 		delta = solution.getCost() - solution_best.getCost();
 		System.out.println("delta: " + delta);
 		if(delta < 0) {

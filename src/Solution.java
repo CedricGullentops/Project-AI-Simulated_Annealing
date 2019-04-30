@@ -25,7 +25,7 @@ public class Solution {
 		this.Vehicle_assignments = new ArrayList<int[]>(another.Vehicle_assignments);
 		this.Assigned_Requests =  new ArrayList<int[]>(another.Assigned_Requests);
 		this.Unassigned_Requests = new ArrayList<int[]>(another.Unassigned_Requests);
-		//this.req_temp =  new ArrayList<Request>(another.req_temp);
+		this.req_temp =  new ArrayList<Request>(another.req_temp);
 		this.matrix = another.matrix;
 	}
 	
@@ -34,7 +34,7 @@ public class Solution {
 		this.Vehicle_assignments = new ArrayList<int[]>(another.Vehicle_assignments);
 		this.Assigned_Requests =  new ArrayList<int[]>(another.Assigned_Requests);
 		this.Unassigned_Requests = new ArrayList<int[]>(another.Unassigned_Requests);
-		//this.req_temp =  new ArrayList<Request>(another.req_temp);
+		this.req_temp =  new ArrayList<Request>(another.req_temp);
 		this.matrix = another.matrix;
 	}
 	
@@ -224,7 +224,12 @@ public class Solution {
 		        //Change the car's zone
 		        for (int k=0; k<Vehicle_assignments.size(); k++){
 		        	if (Vehicle_assignments.get(k)[0] == randomcar){
-		        		Vehicle_assignments.get(k)[1] = random.nextInt(nzones);
+		        		int nextzone = random.nextInt(nzones);
+		        		System.out.println("Freed vehicle: " + randomcar + " and put it in zone: " + nextzone);
+		        		int[] car_assignment = new int[2];
+		        		car_assignment[0] = randomcar;
+		        		car_assignment[1] = nextzone;
+		        		Vehicle_assignments.set(k, car_assignment);
 		        		break;
 		        	}
 		        }
