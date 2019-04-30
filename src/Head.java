@@ -14,21 +14,22 @@ public class Head {
 	private OverlapMatrix matrix;
 	private Solution solution, solution_best, solution_best_glob;
 	private Solution solution_init = new Solution();
-	private int runtime_min = 1;
-	private int nNeighbours = 1;
+	private int runtime_min = 5;
+	private int nNeighbours = 3;
 	boolean carbool = false;
 	private int tcount = 2;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	int delta;
-	int start = 2000;
+	int start = 800;
+	int end = 10;
 	private boolean toPlot = true;
 	private final PlotData plot = new PlotData("Score vs Time");
 	private int counter=0;
-	private final int MAXITER = 25000;
+	private int MAXITER = 1000;
 	private Random random;
 	private long SEED = 10;
-	private double KOELING = 0.97;
+	private double KOELING = 0.99;
 	
 	public void runProgram(){
 		random = new Random();
@@ -38,7 +39,7 @@ public class Head {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/100_5_14_25.csv");
+				fr = new FileInputStream("examples/210_5_44_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
 						//System.out.println(ccounter + " . " + counter + ". " + input);
@@ -83,13 +84,8 @@ public class Head {
 			}
 			createOverlapMatrix();
 			System.out.println("Overlap matrix generated @ " + C.displayTime());
-			//solution = new Solution();
-			//solution.generateInitial(requests, matrix, zones, cars);
 			simAnnealing();
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
-			//System.out.println("solution cost: " + solution_best_glob.getCost());
-			//System.out.println("\t\t\t final size: " + solution_best_glob.getAssigned_Requests().size());
-			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());
 			if (toPlot){
 				plot.createPlot();
@@ -106,7 +102,7 @@ public class Head {
 		if(tcount > 1)
 		{
 			for(int i=0;i < tcount-1;i++) {
-				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED+i,KOELING,i));
+				threads.add(new AnnealLoop(i,requests,zones,cars,matrix,nNeighbours,start,MAXITER,SEED+i,KOELING,i,end,runtime_min,C));
 				threads.get(i).startLoop();
 			}
 		}	
@@ -120,14 +116,11 @@ public class Head {
 		int nmutations = 1;
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
-				//System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
 				if(tcount > 1)
 				{
 					for(int i=0;i < tcount-1;i++) {
 						temp_sol.copySolution(threads.get(i).stopLoop());
 						System.out.println("Thread " + Integer.toString(i) + " cost: " + Integer.toString(temp_sol.getCost()));
-						temp_sol.calculateCost();
-						//System.out.println("temp sol solution cost recalculated: " + solution.getCost());
 						
 						if(temp_sol.getCost() < solution_best_glob.getCost()) {
 							solution_best_glob.copySolution(temp_sol);
@@ -137,15 +130,19 @@ public class Head {
 				break;
 			}
 			simLoop();	
-			//System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 			nmutations++;
+			if (nmutations % MAXITER == 0) {
+				float timeleft = runtime_min * 60 * 1000 - C.cTime();
+				float ratio = nmutations/C.cTime();
+				float mutationsleft = ratio * timeleft;
+				float templeft = start - end;
+				MAXITER = (int) (mutationsleft / templeft);
+				System.out.println("MAXITER changed to: " + MAXITER);
+			}
 		}
 		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
-		//System.out.println("before recalc: " + solution_best_glob.getCost());
 		solution_best_glob.calculateCost();
 		solution_best_glob.printCSV();
-		//System.out.println("\t\t\t this time size: " + solution_best_glob.getAssigned_Requests().size());
-		//System.out.println("after recalc: " + solution_best_glob.getCost());
 	}
 	
 	public void simLoop() {
@@ -155,51 +152,32 @@ public class Head {
 		else{
 			carbool = false;
 		}
-		//-----------------------------------------------------------------------------------
-		for (int i=0; i<32; i++){
-			//System.out.println("before solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
-		}
 		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
-		for (int i=0; i<32; i++){
-			//System.out.println("solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
-		}
 		delta = solution.getCost() - solution_best.getCost();
-		//System.out.println("delta: " + delta);
 		if(delta < 0) {
-			//System.out.println("Het is beter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
 				solution_best_glob.copySolution(solution_best);
 				plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
-				start *= KOELING;
 			}
 		}
 		else {
 			if(random.nextFloat() >= 1-Math.exp(-delta/(float)start)) {
-				//System.out.println("Het is slechter maar geaccepteerd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				solution_best.copySolution(solution);
 			}
 			else
 			{
-				//System.out.println("Het is slechter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				//System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
 				solution.copySolution(solution_best);
-				//System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
 			}
 		}
 		counter++;
 		if(counter > MAXITER) {
-			//System.out.println("Maxiter shizzle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			//solution.copySolution(solution_init);
 			//solution_best.copySolution(solution_init);
 			start *= KOELING;
-			//System.out.println("start value: " + start);
+			System.out.println("start value: " + start);
 			counter = 0;
 		}
-		
-		//System.out.println("before copy, before recalc: " + solution.getCost());
-		//solution.calculateCost();
-		//System.out.println("before copy, after recalc: " + solution.getCost());
 	}
 
 	private void processInputData(int ccounter,int counter,int input){

@@ -12,20 +12,23 @@ public class AnnealLoop extends Thread{
 	private int nNeighbours = 3;
 	private boolean run=false;
 	private int tid;
-	private int start_i,start;
+	private int start_i,start,end, runtime_min;
 	private int counter;
-	private int MAXITER;
+	private int MAXITER = 1000;
 	private Random random = new Random();
 	private double koeling;
 	private final PlotData plot;
-	private final static Clock C = new Clock();
+	private final Clock C;
 	
-	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling, int threadcount) {
+	public AnnealLoop(int id,ArrayList<Request> r,ArrayList<Zone> z,ArrayList<Car> c, OverlapMatrix m, int nNeighbours, int start,int M,long SEED, double koeling, int threadcount, int end, int runtime_min, Clock clock) {
+		this.C = clock;
 		this.plot = new PlotData("Score vs Time: thread " + Integer.toString(threadcount));
 		this.koeling = koeling;
 		this.random.setSeed(SEED);
-		start_i = start;
+		this.start = start;
+		this.end = end;
 		this.nNeighbours = nNeighbours;
+		this.runtime_min = runtime_min;
 		MAXITER = M;
 		tid = id+1;
 		matrix = m;
@@ -39,9 +42,9 @@ public class AnnealLoop extends Thread{
 	}
 	
 	public void run() {
-		start = start_i;
 		int delta;
 		counter = 0;
+		int nmutations = 0;
 		while(run) {
 			if (random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0){
 				carbool = true;
@@ -56,16 +59,18 @@ public class AnnealLoop extends Thread{
 				if (solution_best_glob.getCost() > solution_best.getCost()){
 					solution_best_glob.copySolution(solution_best);
 					plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
-					start *= koeling;
-					System.out.println("New best "+tid+":" +solution_best.getCost());
 				}
 			}
 			else {
-				counter++;
 				if(random.nextFloat() >= 1-Math.exp(-delta/(float)start)) {
 					solution_best.copySolution(solution);
 				}
+				else
+				{
+					solution.copySolution(solution_best);
+				}
 			}
+			counter++;
 			if(counter > MAXITER) {
 				//solution.copySolution(solution_init);
 				//solution_best.copySolution(solution_init);
@@ -73,7 +78,19 @@ public class AnnealLoop extends Thread{
 				System.out.println("start value: " + start);
 				counter = 0;
 			}
-			solution.copySolution(solution_best);	
+			nmutations++;
+			if (nmutations % MAXITER == 0) {
+				//System.out.println("ctime: " + C.cTime());
+				float timeleft = runtime_min * 60 * 1000 - C.cTime();
+				//System.out.println("timeleft: " + timeleft);
+				float ratio = nmutations/C.cTime();
+				//System.out.println("ratio: " + ratio);
+				float mutationsleft = ratio * timeleft;
+				//System.out.println("mutationsleft: " + mutationsleft);
+				float templeft = start - end;
+				MAXITER = (int) (mutationsleft / templeft);
+				System.out.println("\t MAXITER changed to: " + MAXITER);
+			}
 		}
 	}
 	
