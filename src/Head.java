@@ -17,7 +17,7 @@ public class Head {
 	private int runtime_min = 1;
 	private int nNeighbours = 1;
 	boolean carbool = false;
-	private int tcount = 1;
+	private int tcount = 2;
 	private final static int SHORTMODE = 0;
 	private final static Clock C = new Clock();
 	int delta;
@@ -38,7 +38,7 @@ public class Head {
 		String input = "";
 		
 			try {
-				fr = new FileInputStream("examples/210_5_33_25.csv");
+				fr = new FileInputStream("examples/100_5_14_25.csv");
 				while((line = fr.read()) != -1) {				
 					if((char)line == ',') {
 						//System.out.println(ccounter + " . " + counter + ". " + input);
@@ -87,8 +87,8 @@ public class Head {
 			//solution.generateInitial(requests, matrix, zones, cars);
 			simAnnealing();
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
-			System.out.println("solution cost: " + solution_best_glob.getCost());
-			System.out.println("\t\t\t final size: " + solution_best_glob.getAssigned_Requests().size());
+			//System.out.println("solution cost: " + solution_best_glob.getCost());
+			//System.out.println("\t\t\t final size: " + solution_best_glob.getAssigned_Requests().size());
 			solution.printCSV();
 			System.out.println("Program exitted @ "+ C.displayTime());
 			if (toPlot){
@@ -120,14 +120,14 @@ public class Head {
 		int nmutations = 1;
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
-				System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
+				//System.out.println("Main thread cost: " + Integer.toString(solution_best_glob.getCost()));
 				if(tcount > 1)
 				{
 					for(int i=0;i < tcount-1;i++) {
 						temp_sol.copySolution(threads.get(i).stopLoop());
 						System.out.println("Thread " + Integer.toString(i) + " cost: " + Integer.toString(temp_sol.getCost()));
 						temp_sol.calculateCost();
-						System.out.println("temp sol solution cost recalculated: " + solution.getCost());
+						//System.out.println("temp sol solution cost recalculated: " + solution.getCost());
 						
 						if(temp_sol.getCost() < solution_best_glob.getCost()) {
 							solution_best_glob.copySolution(temp_sol);
@@ -137,19 +137,19 @@ public class Head {
 				break;
 			}
 			simLoop();	
-			System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
+			//System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
 			nmutations++;
 		}
 		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
-		System.out.println("before recalc: " + solution_best_glob.getCost());
+		//System.out.println("before recalc: " + solution_best_glob.getCost());
 		solution_best_glob.calculateCost();
 		solution_best_glob.printCSV();
-		System.out.println("\t\t\t this time size: " + solution_best_glob.getAssigned_Requests().size());
-		System.out.println("after recalc: " + solution_best_glob.getCost());
+		//System.out.println("\t\t\t this time size: " + solution_best_glob.getAssigned_Requests().size());
+		//System.out.println("after recalc: " + solution_best_glob.getCost());
 	}
 	
 	public void simLoop() {
-		if (true /*random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0*/){
+		if (random.nextFloat()<(100-100.0*(float)counter/MAXITER)/100.0){
 			carbool = true;
 		}
 		else{
@@ -157,16 +157,16 @@ public class Head {
 		}
 		//-----------------------------------------------------------------------------------
 		for (int i=0; i<32; i++){
-			System.out.println("before solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
+			//System.out.println("before solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
 		}
 		solution.mutate(cars, zones, requests, carbool, random.nextInt(nNeighbours)+1,random);
 		for (int i=0; i<32; i++){
-			System.out.println("solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
+			//System.out.println("solution vec assign: " + solution.getVehicle_assignments().get(i)[0] + " " + solution.getVehicle_assignments().get(i)[1]);
 		}
 		delta = solution.getCost() - solution_best.getCost();
-		System.out.println("delta: " + delta);
+		//System.out.println("delta: " + delta);
 		if(delta < 0) {
-			System.out.println("Het is beter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			//System.out.println("Het is beter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
 				solution_best_glob.copySolution(solution_best);
@@ -176,24 +176,24 @@ public class Head {
 		}
 		else {
 			if(random.nextFloat() >= 1-Math.exp(-delta/(float)start)) {
-				System.out.println("Het is slechter maar geaccepteerd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//System.out.println("Het is slechter maar geaccepteerd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				solution_best.copySolution(solution);
 			}
 			else
 			{
-				System.out.println("Het is slechter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
+				//System.out.println("Het is slechter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
 				solution.copySolution(solution_best);
-				System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
+				//System.out.println("\t Solution: " + solution.getCost() + " Solution best: " +solution_best.getCost());
 			}
 		}
 		counter++;
 		if(counter > MAXITER) {
-			System.out.println("Maxiter shizzle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			//System.out.println("Maxiter shizzle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			//solution.copySolution(solution_init);
 			//solution_best.copySolution(solution_init);
 			start *= KOELING;
-			System.out.println("start value: " + start);
+			//System.out.println("start value: " + start);
 			counter = 0;
 		}
 		

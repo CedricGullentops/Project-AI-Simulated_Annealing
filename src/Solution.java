@@ -225,7 +225,7 @@ public class Solution {
 		        for (int k=0; k<Vehicle_assignments.size(); k++){
 		        	if (Vehicle_assignments.get(k)[0] == randomcar){
 		        		int nextzone = random.nextInt(nzones);
-		        		System.out.println("Freed vehicle: " + randomcar + " and put it in zone: " + nextzone);
+		        		//System.out.println("Freed vehicle: " + randomcar + " and put it in zone: " + nextzone);
 		        		int[] car_assignment = new int[2];
 		        		car_assignment[0] = randomcar;
 		        		car_assignment[1] = nextzone;
@@ -241,7 +241,7 @@ public class Solution {
 						assignment[0] = Assigned_Requests.get(j)[0];
 		        		Unassigned_Requests.add(assignment);
 		        		toRemove.add(Assigned_Requests.get(j)[0]);
-		        		System.out.println("\t to be removed: " + Assigned_Requests.get(j)[0]);
+		        		//System.out.println("\t to be removed: " + Assigned_Requests.get(j)[0]);
 		        	}
 		        }
 		        for (int j=toRemove.size()-1; j>=0; j--){
@@ -249,8 +249,8 @@ public class Solution {
 		        		if (toRemove.get(j) == Assigned_Requests.get(k)[0]){
 		        			int rm = Assigned_Requests.get(k)[0];
 		        			this.Assigned_Requests.remove(k);
-		        			System.out.println("\t\t removed: " + rm);
-		        			System.out.println("\t\t\t size: " + Assigned_Requests.size());
+		        			//System.out.println("\t\t removed: " + rm);
+		        			//System.out.println("\t\t\t size: " + Assigned_Requests.size());
 		        			break;
 		        		}
 		        	}
@@ -290,7 +290,7 @@ public class Solution {
 	        				if (!overlaps){
 	        					int[] new_assigned = {Unassigned_Requests.get(l)[0], cars.get(m).getId(), neighbour-1};
     	        				Assigned_Requests.add(new_assigned);
-    	        				System.out.println("Added: " + new_assigned[0]);
+    	        				//System.out.println("Added: " + new_assigned[0]);
     	        				toRemove.add(Unassigned_Requests.get(l)[0]);
     	        				breakfree = true;
 	        				}
