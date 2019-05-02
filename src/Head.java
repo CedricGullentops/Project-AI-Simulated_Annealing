@@ -23,8 +23,6 @@ public class Head {
 	int delta;
 	int start = 800;
 	int end = 10;
-	private boolean toPlot = false;
-	private final PlotData plot = new PlotData("Score vs Time");
 	private int counter=0;
 	private int MAXITER = 1000;
 	private Random random;
@@ -36,7 +34,7 @@ public class Head {
 	public Head(String inputfile, String outputfile, int secondstorun, long seeds, int nthreads){
 		this.inputfile = inputfile;
 		this.outputfile = outputfile;
-		this.secondstorun = secondstorun;
+		this.secondstorun = secondstorun-1;
 		this.SEED = seeds;
 		this.tcount = nthreads;
 	}
@@ -91,12 +89,7 @@ public class Head {
 			simAnnealing();
 			System.out.println("Stopped algorithm @ "+ C.displayTime());
 			System.out.println("Program exitted @ "+ C.displayTime());
-			if (toPlot){
-				plot.createPlot();
-			}
-			else{
-				System.exit(0);			
-			}		
+			System.exit(0);			
 	}
 	
 	private void simAnnealing(){
@@ -117,7 +110,7 @@ public class Head {
 		solution = new Solution(solution_init);
 		solution_best = new Solution(solution_init);
 		solution_best_glob = new Solution(solution_init);
-		int nmutations = 1;
+		float nmutations = 1;
 		while(true) {
 			if(C.cTime() >= runtime_ms) {
 				if(tcount > 1)
@@ -143,7 +136,7 @@ public class Head {
 				MAXITER = (int) (mutationsleft / templeft);
 			}
 		}
-		System.out.println("Main thread did " + Integer.toString(nmutations) + " mutations.");
+		System.out.println("Main thread did " + Float.toString(nmutations) + " mutations.");
 		solution_best_glob.calculateCost();
 		solution_best_glob.printCSV(outputfile);
 	}
@@ -161,7 +154,6 @@ public class Head {
 			solution_best.copySolution(solution);
 			if (solution_best_glob.getCost() > solution_best.getCost()){
 				solution_best_glob.copySolution(solution_best);
-				plot.addDataPoint(solution_best_glob.getCost(), C.cTime());
 			}
 		}
 		else {
